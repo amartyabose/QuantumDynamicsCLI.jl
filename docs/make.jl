@@ -14,8 +14,11 @@ makedocs(;
             "Simulate Module" => "./documentation/Simulate.md",
             "Post Module" => "./documentation/Post.md",
             "Comonicon" => "./documentation/ComonIcon.md",
-            "References" => "./documentation/References.md"
-        ]
+        ],
+        "Examples" => [
+            "Spin-Boson Simulations" => "./documentation/Spin-Boson.md",
+        ],
+        "References" => "./documentation/References.md"
     ]
 )
 deploydocs(
