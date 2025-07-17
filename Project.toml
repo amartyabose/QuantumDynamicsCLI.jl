@@ -19,10 +19,10 @@ Comonicon = "1"
 DelimitedFiles = "1"
 FoldsThreads = "0.1"
 MKL = "0.7"
-QuantumDynamics = "0.2.26"
+QuantumDynamics = "0.2.30"
 Unitful = "1"
 UnitfulAtomic = "1"
-julia = "1.9"
+julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

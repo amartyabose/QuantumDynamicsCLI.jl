@@ -69,4 +69,19 @@ There are two ways of incorporating the effect of non-Markovian memory in path i
 
 Finally, if one does not intend on using TTM, we suggest using TEMPO for accessing long memory lengths efficiently. This is chosen by setting `method = "TEMPO"`.
 
-For all the TTM-based methods, the memory length in terms of number of time-steps is set through the parameter, `rmax`. For `method = "TEMPO"`, the memory length is set through the parameter, `kmax`.
+In this family of methods, the non-Markovian memory is incorporated explicitly by specifying the number of time-steps it spans. For all the TTM-based methods, this memory length is set through the parameter, `rmax`. For `method = "TEMPO"`, it is set through the parameter, `kmax`.
+
+Every method has a separate set of parameters that handle the balance between
+accuracy and efficiency. In case of "QuAPI-TTM", that parameter is called
+`cutoff` and it is by default set to $10^{-10}$. All paths with absolute value
+of amplitude below this cutoff are ignored.
+
+In the case of "Blip-TTM", the accuracy is set via the maximum number of blips
+allowed, `max_blips`. If this is set to $-1$, that means all blips are included.
+
+For "TEMPO-TTM", the accuracy is set through the tensor network evaluation
+parameters. The `cutoff` of the singular value decomposition, and the maximum
+bond dimension, `maxdim`, used in obtaining the matrix product state
+representation of the path amplitude tensor are the two parameters that are used
+for controlling the accuracy. The default values of these two parameters are
+$10^{-10}$ and $1000$ respectively.
