@@ -254,7 +254,8 @@ function dynamics(::QDSimUtilities.Method"TEMPO", units::QDSimUtilities.Units, s
         fbU = if isnothing(sys.external_fields)
             Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, L)
         else
-            Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, L, ndivs=100, external_fields=sys.external_fields)
+            ndivs = get(sim_node, "ndivs", 100)
+            Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, L, ndivs, external_fields=sys.external_fields)
         end
         Utilities.check_or_insert_value(data, "fbU", fbU)
         flush(data)
