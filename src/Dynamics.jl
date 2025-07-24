@@ -251,7 +251,11 @@ function dynamics(::QDSimUtilities.Method"TEMPO", units::QDSimUtilities.Units, s
             L = nothing
         end
 
-        fbU = Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, L)
+        fbU = if isnothing(sys.external_fields)
+            Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, L)
+        else
+            Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, L, ndivs=100, external_fields=sys.external_fields)
+        end
         Utilities.check_or_insert_value(data, "fbU", fbU)
         flush(data)
         ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
@@ -295,7 +299,11 @@ function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sy
             L = nothing
         end
 
-        @time _, ρs = HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol))
+        @time _, ρs = if isnothing(sys.external_fields)
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol))
+        else
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, external_fields=sys.external_fields, extraargs=Utilities.DiffEqArgs(; reltol, abstol))
+        end
         Utilities.check_or_insert_value(data, "rho", ρs)
         flush(data)
     end

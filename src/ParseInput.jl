@@ -52,6 +52,7 @@ end
 Parses the `[system]` portion of the system file for the Hamiltonian and converts it to atomic units for internal use.
 
 Parameters obtained:
+- `type` [Default: `real`, Optionally: `complex`]: the type of elements in the Hamiltonian.
 - `Htype` [Default: `file`]: How to parse the Hamiltonian file. Typically `file` to read a file, `nearest_neighbor` to specify the Hamiltonian as a nearest-neighbor tight-binding model, or `nearest_neighbor_cavity` for a Hamiltonian consisting of a nearest-neighbor tight-binding part and a cavity with interacts with all the sites.
 
 Then the Hamiltonian needs to be specified in the energy units that are being used. This can be done in several ways depending on the value of `Htype`:
@@ -64,7 +65,11 @@ Then the Hamiltonian needs to be specified in the energy units that are being us
     - `cavity_energy`: the energy of the cavity mode
     - `cavity_coupling`: coupling of the cavity to the monomers
 
-Finally a parameter `is_QuAPI` [Default: `true`] specifies if the specified system Hamiltonian should be interpreted to be a part of the QuAPI system-bath Hamiltonian form or not.
+The parameter `is_QuAPI` [Default: `true`] specifies if the specified system Hamiltonian should be interpreted to be a part of the QuAPI system-bath Hamiltonian form or not.
+
+If external time-dependent fields have to be incorporated, the subsection `[external_field]` should be used. By default no external fields are involved. If used, the subsection would have two variables:
+- `coupling_op`: the operator through which the external time-dependent field interacts with the system
+- `V_t`: this is a single line expression which evaluates to the value of the field as a function of time, t. This variable needs to be called `t`.
 """
 function parse_system(sys_inp, unit)
     Htype = get(sys_inp, "Htype", "file")
@@ -88,11 +93,26 @@ function parse_system(sys_inp, unit)
         H[end, end] = cavity_energy
         H
     end
-    ρ0 = nothing
-    if haskey(sys_inp, "init_rho")
+    ρ0 = if haskey(sys_inp, "init_rho")
         ρ0 = read_matrix(sys_inp["init_rho"], "real")
+    else
+        nothing
     end
-    QDSimUtilities.System(Htype, H0, ρ0)
+
+    external_fields = if haskey(sys_inp, "external_field")
+        EFs = Vector{Utilities.ExternalField}()
+        for EF in sys_inp["external_field"]
+            coupling_op = read_matrix(EF["coupling_op"], "real") .+ 0.0im
+            Vstr = "t -> " * EF["V_t"]
+            V(t::Float64) = Base.invokelatest(eval(Meta.parse(Vstr)), t)::Float64
+            push!(EFs, Utilities.ExternalField(V, coupling_op))
+        end
+        EFs
+    else
+        nothing
+    end
+
+    QDSimUtilities.System(Htype, H0, ρ0, external_fields)
 end
 
 """

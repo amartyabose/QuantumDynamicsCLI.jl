@@ -1,0 +1,13 @@
+[system]
+Hamiltonian = "Hamiltonian"
+[[system.external_field]]
+coupling_op = "ext-coupl"
+V_t = "11.96575 * cos(10.0 * t)"
+
+[baths]
+beta = 0.5
+[[baths.bath]]
+type = "ohmic"
+xi = 0.16
+omegac = 7.5
+svec = [1.0, -1.0]

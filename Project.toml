@@ -1,7 +1,7 @@
 name = "QuantumDynamicsCLI"
 uuid = "7b5053f5-1407-4cb9-9ce0-e1149904b77e"
 authors = ["Amartya Bose <amartya.bose@gmail.com. and contributors"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 Comonicon = "863f3e99-da2a-4334-8734-de3dacbe5542"
@@ -19,7 +19,7 @@ Comonicon = "1"
 DelimitedFiles = "1"
 FoldsThreads = "0.1"
 MKL = "0.7"
-QuantumDynamics = "0.2.30"
+QuantumDynamics = "0.2.31"
 Unitful = "1"
 UnitfulAtomic = "1"
 julia = "1.10"

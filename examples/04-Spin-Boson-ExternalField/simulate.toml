@@ -1,0 +1,14 @@
+[simulation]
+name = "test time dependent second run"
+method = "TEMPO"
+output = "test.hdf5"
+
+nsteps = 100
+dt = 0.125
+kmax = 9
+
+maxdim = 1000
+cutoff = 1e-10
+
+rho0 = "P_1"
+outgroup = "P_1"

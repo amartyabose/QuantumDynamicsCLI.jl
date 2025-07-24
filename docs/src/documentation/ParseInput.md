@@ -52,8 +52,8 @@ Various methods of simulation are supported:
     - Time-Evolved Matrix Product Operators (TEMPO) [strathearnEfficientNonMarkovianQuantum2018](@cite)
     - Pairwise-Connected Tensor Network Path Integral (PC-TNPI) [bosePairwiseConnectedTensor2022](@cite)
 - Hierarchical Equations of Motion (HEOM) [tanimuraNumericallyExactApproach2020](@cite)
-- Generalized Quantum Master Equation
-- Multichromophore Incoherest Forster Theory
+- Generalized Quantum Master Equation (GQME) [nakajimaQuantumTheoryTransport1958, zwanzigIdentityThreeGeneralized1964](@cite)
+- Multichromophore Incoherest Forster Resonance Energy Transfer [forsterZwischenmolekulareEnergiewanderungUnd1948, jangMultichromophoricForsterResonance2004](@cite)
 - Bloch-Redfield Master Equation
 - Transfer Tensor Method (TTM) [cerrilloNonMarkovianDynamicalMaps2014](@cite) coupled with any of the path integral methods
 

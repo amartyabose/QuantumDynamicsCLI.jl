@@ -1,0 +1,25 @@
+[[simulation]]
+name = "test time dependent"
+method = "TEMPO"
+output = "test.hdf5"
+
+nsteps = 100
+dt = 0.125
+rmax = 9
+
+maxdim = 1000
+cutoff = 1e-10
+
+outgroup = "P_1"
+observable_output = "dt_0.25_rmax_9.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
