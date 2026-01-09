@@ -25,7 +25,6 @@ end
 struct System
     Htype::String
     Hamiltonian::Matrix{ComplexF64}
-    ρ0::Union{Nothing, Matrix{ComplexF64}}
     external_fields::Union{Nothing, Vector{Utilities.ExternalField}}
 end
 

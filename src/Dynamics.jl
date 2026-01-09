@@ -382,6 +382,8 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
     transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
     solver_group = Utilities.create_and_select_group(transform_group, "solver=$solver")
 
+    ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
 
@@ -393,7 +395,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
     if !dry
         @info "Running with $(Threads.nthreads()) threads."
-        isnothing(sys.ρ0) || (ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins))
+        ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
         U0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
         T0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
 
@@ -413,20 +415,20 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
             @info "Calculating bin $n of $nbins"
             U0e, ρ = SpinLSC.propagate(; Hamiltonian=sys.Hamiltonian, Jw=bath.Jw,
                                        β=bath.β, num_bath_modes=bath.num_osc,
-                                       ρ0=sys.ρ0, dt=sim.dt, ntimes=sim.nsteps,
+                                       ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
                                        svec=bath.svecs,
                                        transform=transforms[transform],
                                        nmc=nmc, solver=solvers[solver],
                                        verbose=true, outgroup=outgroup,
                                        output=data)
-            isnothing(ρ) || (ρs[n] = ρ)
+            ρs[n] = ρ
             U0es[n] = U0e
             T0es[n] = read(data["T0e"])
         end
 
         U0e_mean, U0e_std = QDSimUtilities.matrix_avg_std(U0es)
         T0e_mean, T0e_std = QDSimUtilities.matrix_avg_std(T0es)
-        isnothing(sys.ρ0) || (ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs))
+        ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs)
 
         outgrouphdf5 = Utilities.create_and_select_group(solver_group, outgroup)
         Utilities.check_or_insert_value(solver_group, "dt", sim.dt / units.time_unit)
@@ -441,11 +443,9 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
         Utilities.check_or_insert_value(solver_group, "T0e", T0e_mean)
         Utilities.check_or_insert_value(solver_group, "T0e_std", T0e_std)
 
-        if !isnothing(sys.ρ0)
-            Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
-            Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
-            flush(outgrouphdf5)
-        end
+        Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
+        Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
+        flush(outgrouphdf5)
 
         flush(solver_group)
     end

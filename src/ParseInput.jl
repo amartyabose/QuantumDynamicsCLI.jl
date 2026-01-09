@@ -93,11 +93,6 @@ function parse_system(sys_inp, unit)
         H[end, end] = cavity_energy
         H
     end
-    ρ0 = if haskey(sys_inp, "init_rho")
-        ρ0 = read_matrix(sys_inp["init_rho"], "real")
-    else
-        nothing
-    end
 
     external_fields = if haskey(sys_inp, "external_field")
         EFs = Vector{Utilities.ExternalField}()
@@ -112,7 +107,7 @@ function parse_system(sys_inp, unit)
         nothing
     end
 
-    QDSimUtilities.System(Htype, H0, ρ0, external_fields)
+    QDSimUtilities.System(Htype, H0, external_fields)
 end
 
 """
