@@ -393,6 +393,8 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
     outgroup = sim_node["outgroup"]
 
+    Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+
     if !dry
         @info "Running with $(Threads.nthreads()) threads."
         ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
@@ -413,7 +415,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
             flush(data)
 
             @info "Calculating bin $n of $nbins"
-            U0e, ρ = SpinLSC.propagate(; Hamiltonian=sys.Hamiltonian, Jw=bath.Jw,
+            U0e, ρ = SpinLSC.propagate(; Hamiltonian=Hamiltonian, Jw=bath.Jw,
                                        β=bath.β, num_bath_modes=bath.num_osc,
                                        ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
                                        svec=bath.svecs,
