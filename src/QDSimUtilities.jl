@@ -63,4 +63,25 @@ function parse_exec(exec_str::String)
     end
 end
 
+function matrix_avg_std(mats::Vector{<:AbstractArray{<:Complex,3}})
+    matmean = zeros(ComplexF64, size(mats[1]))
+    matstd = zeros(ComplexF64, size(mats[1]))
+
+    N = length(mats)
+    d = size(matmean, 2)
+
+    for t in 1:size(mats[1], 1)
+        matmean[t,:,:] = sum(getindex.(mats, t,:,:)) / N
+
+        diff = [ x - matmean[t,:,:] for x in getindex.(mats, t,:,:) ]
+        for i = 1:d, j =1:d
+            matstd[t,i,j] = complex(
+                sqrt(sum(real(getindex.(diff, i,j)).^2) / (n-1)),
+                sqrt(sum(imag(getindex.(diff, i,j)).^2) / (n-1)))
+        end
+    end
+
+    matmean, matstd
+end
+
 end
