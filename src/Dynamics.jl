@@ -287,7 +287,7 @@ function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sy
         Utilities.check_or_insert_value(data, "time", 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect)
         flush(data)
 
-        Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)])) 
+        Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
         sys_ops = [diagm(complex(bath.svecs[nb, :])) for nb = 1:size(bath.svecs, 1)]
         ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
 
@@ -326,7 +326,7 @@ function dynamics(::QDSimUtilities.Method"BlochRedfield", units::QDSimUtilities.
         Utilities.check_or_insert_value(data, "time", 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect)
         flush(data)
 
-        Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)])) 
+        Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
         sys_ops = [diagm(complex(bath.svecs[nb, :])) for nb = 1:size(bath.svecs, 1)]
         ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
         @time _, ρs = BlochRedfield.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, dt=sim.dt, ntimes=sim.nsteps, extraargs=Utilities.DiffEqArgs(; reltol, abstol))
@@ -355,6 +355,102 @@ function dynamics(::QDSimUtilities.Method"Forster", units::QDSimUtilities.Units,
         k, U = Forster.build_incoherent_propagator(; H=sys.Hamiltonian, Jw, dt=sim.dt, β=bath.β, verbose=true)
         Utilities.check_or_insert_value(data, "k", k)
         Utilities.check_or_insert_value(data, "U", U)
+    end
+    data
+end
+
+function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units,
+                  sys::QDSimUtilities.System, bath::QDSimUtilities.Bath,
+                  sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group},
+                  sim_node; dry=false)
+    if !dry
+        @info "Running a Spin-LSC calculation. Please cite:"
+        QDSimUtilities.print_citation(SpinLSC.references)
+    end
+
+    transforms = Dict{String,Type{<:SpinLSC.SWTransform}}(
+        "QTransform" => SpinLSC.QTransform,
+        "WTransform" => SpinLSC.WTransform,
+        "PTransform" => SpinLSC.PTransform)
+    solvers = Dict{String,Type{<:SpinLSC.SpinLSCSolver}}(
+        "RK4" => SpinLSC.RK4,
+        "Verlet" => SpinLSC.Verlet,
+    )
+
+    transform = get(sim_node, "SW_transform", "QTransform")
+    solver = get(sim_node, "solver", "RK4")
+    transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
+    solver_group = Utilities.create_and_select_group(transform_group, "solver=$solver")
+    data = Utilities.create_and_select_group(solver_group, "average")
+
+    ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
+    nbins = get(sim_node, "num_bins", 1)
+    nmc = sim_node["num_mc"]
+
+    for n in 1:nbins
+        Utilities.create_and_select_group(solver_group, "bin #$n")
+    end
+
+    outgroup = sim_node["outgroup"]
+
+    Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+
+    if !dry
+        @info "Running with $(Threads.nthreads()) threads."
+        ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
+        U0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
+        T0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
+
+        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
+        for n in 1:nbins
+            bin = Utilities.create_and_select_group(solver_group, "bin #$n")
+            Utilities.check_or_insert_value(bin, "num_mc", nmc)
+
+            outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
+            Utilities.check_or_insert_value(bin, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(bin, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(bin, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+            flush(bin)
+
+            @info "Calculating bin $n of $nbins"
+            U0e, ρ = SpinLSC.propagate(; Hamiltonian=Hamiltonian, Jw=bath.Jw,
+                                       β=bath.β, num_bath_modes=bath.num_osc,
+                                       ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
+                                       svec=bath.svecs,
+                                       transform=transforms[transform],
+                                       nmc=nmc, solver=solvers[solver],
+                                       verbose=true, outgroup=outgroup,
+                                       output=bin)
+            ρs[n] = ρ
+            U0es[n] = U0e
+            T0es[n] = read(bin["T0e"])
+        end
+
+        U0e_mean, U0e_std = QDSimUtilities.matrix_avg_std(U0es)
+        T0e_mean, T0e_std = QDSimUtilities.matrix_avg_std(T0es)
+        ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs)
+
+        outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
+        Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
+        Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
+        Utilities.check_or_insert_value(data, "time", time)
+        Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+        Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+
+        Utilities.check_or_insert_value(data, "U0e", U0e_mean)
+        Utilities.check_or_insert_value(data, "U0e_std", U0e_std)
+
+        Utilities.check_or_insert_value(data, "T0e", T0e_mean)
+        Utilities.check_or_insert_value(data, "T0e_std", T0e_std)
+
+        Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
+        Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
+        flush(outgrouphdf5)
+
+        flush(data)
     end
     data
 end
