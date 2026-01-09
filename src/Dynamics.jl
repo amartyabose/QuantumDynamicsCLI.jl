@@ -379,8 +379,8 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
     transform = get(sim_node, "SW_transform", "QTransform")
     solver = get(sim_node, "solver", "RK4")
-    transform_group = Utilites.create_and_select_group(dt_group, "SW_transform=$transform")
-    solver_group = Utilites.create_and_select_group(transform_group, "solver=$solver")
+    transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
+    solver_group = Utilities.create_and_select_group(transform_group, "solver=$solver")
 
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
@@ -392,28 +392,29 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
     outgroup = sim_node["outgroup"]
 
     if !dry
-        @info "Running with $(Threads.nthreads())"
-        isnothing(sys.ρ0) || (ρs = Vector{AbstractArray{<:Complex}}(undef, nbins))
-        U0es = Vector{AbstractArray{<:Complex}}(undef, nbins)
-        T0es = Vector{AbstractArray{<:Complex}}(undef, nbins)
+        @info "Running with $(Threads.nthreads()) threads."
+        isnothing(sys.ρ0) || (ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins))
+        U0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
+        T0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
 
-        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit
+        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
         for n in 1:nbins
-            data = Utilites.create_and_select_group(solver_group, "bin #$n")
+            data = Utilities.create_and_select_group(solver_group, "bin #$n")
             Utilities.check_or_insert_value(data, "num_mc", nmc)
 
-            outgrouphdf5 = Utilites.create_and_select_group(data, outgroup)
-            Utilties.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
-            Utilties.check_or_insert_value(data, "time_unit", units.time_unit)
-            Utilties.check_or_insert_value(data, "time", time)
-            Utilites.check_or_insert_value(outgrouphdf5, "time", time)
-            Utilites.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+            outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
+            Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(data, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
             flush(data)
 
             @info "Calculating bin $n of $nbins"
             U0e, ρ = SpinLSC.propagate(; Hamiltonian=sys.Hamiltonian, Jw=bath.Jw,
                                        β=bath.β, num_bath_modes=bath.num_osc,
                                        ρ0=sys.ρ0, dt=sim.dt, ntimes=sim.nsteps,
+                                       svec=bath.svecs,
                                        transform=transforms[transform],
                                        nmc=nmc, solver=solvers[solver],
                                        verbose=true, outgroup=outgroup,
@@ -427,7 +428,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
         T0e_mean, T0e_std = QDSimUtilities.matrix_avg_std(T0es)
         isnothing(sys.ρ0) || (ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs))
 
-        outgrouphdf5 = Utilites.create_and_select_group(solver_group, outgroup)
+        outgrouphdf5 = Utilities.create_and_select_group(solver_group, outgroup)
         Utilities.check_or_insert_value(solver_group, "dt", sim.dt / units.time_unit)
         Utilities.check_or_insert_value(solver_group, "time_unit", units.time_unit)
         Utilities.check_or_insert_value(solver_group, "time", time)
