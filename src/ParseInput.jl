@@ -214,7 +214,8 @@ function parse_bath(baths, sys, unit)
             push!(Jw, bath)
             svecs[nb, nb] = 1.0
         end
-        haskey(b, "num_osc") && (num_osc = fill(b["num_osc"], nsites))
+        haskey(baths["bath"][1], "num_osc") &&
+            (num_osc = fill(baths["bath"][1]["num_osc"], nsites))
     end
     QDSimUtilities.Bath(β, Jw,svecs,(isempty(num_osc) ? nothing : num_osc))
 end
