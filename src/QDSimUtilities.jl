@@ -33,6 +33,7 @@ struct Bath
     β::Float64
     Jw::Vector{SpectralDensities.SpectralDensity}
     svecs::Matrix{Float64}
+    num_osc::Union{Nothing,AbstractVector{<:Integer}}
 end
 
 mutable struct Simulation
