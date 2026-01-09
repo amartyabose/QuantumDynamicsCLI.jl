@@ -203,11 +203,13 @@ function parse_bath(baths, sys, unit)
     Jw = Vector{SpectralDensities.SpectralDensity}()
     svecs = zeros(size(sys.Hamiltonian, 1), size(sys.Hamiltonian, 1))
     btype = get(baths, "baths_type", "list")
+    num_osc = Vector{Integer}()
     if btype == "list"
         svecs = zeros(length(baths["bath"]), size(sys.Hamiltonian, 1))
         for (nb, b) in enumerate(baths["bath"])
             push!(Jw, get_bath(b, unit))
             svecs[nb, :] .= b["svec"]
+            haskey(b, "num_osc") && push!(num_osc, b["num_osc"])
         end
     elseif btype == "site_based"
         bath = get_bath(baths["bath"][1], unit)
@@ -217,8 +219,9 @@ function parse_bath(baths, sys, unit)
             push!(Jw, bath)
             svecs[nb, nb] = 1.0
         end
+        haskey(b, "num_osc") && (num_osc = fill(b["num_osc"], nsites))
     end
-    QDSimUtilities.Bath(β, Jw,svecs)
+    QDSimUtilities.Bath(β, Jw,svecs,(isempty(num_osc) ? nothing : num_osc))
 end
 
 function parse_system_bath(input_file)
