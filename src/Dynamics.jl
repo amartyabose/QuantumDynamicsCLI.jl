@@ -381,6 +381,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
     solver = get(sim_node, "solver", "RK4")
     transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
     solver_group = Utilities.create_and_select_group(transform_group, "solver=$solver")
+    data = Utilities.create_and_select_group(solver_group, "average")
 
     ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
 
@@ -403,16 +404,16 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
         time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
         for n in 1:nbins
-            data = Utilities.create_and_select_group(solver_group, "bin #$n")
-            Utilities.check_or_insert_value(data, "num_mc", nmc)
+            bin = Utilities.create_and_select_group(solver_group, "bin #$n")
+            Utilities.check_or_insert_value(bin, "num_mc", nmc)
 
-            outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
-            Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
-            Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
-            Utilities.check_or_insert_value(data, "time", time)
+            outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
+            Utilities.check_or_insert_value(bin, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(bin, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(bin, "time", time)
             Utilities.check_or_insert_value(outgrouphdf5, "time", time)
             Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
-            flush(data)
+            flush(bin)
 
             @info "Calculating bin $n of $nbins"
             U0e, ρ = SpinLSC.propagate(; Hamiltonian=Hamiltonian, Jw=bath.Jw,
@@ -422,36 +423,36 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
                                        transform=transforms[transform],
                                        nmc=nmc, solver=solvers[solver],
                                        verbose=true, outgroup=outgroup,
-                                       output=data)
+                                       output=bin)
             ρs[n] = ρ
             U0es[n] = U0e
-            T0es[n] = read(data["T0e"])
+            T0es[n] = read(bin["T0e"])
         end
 
         U0e_mean, U0e_std = QDSimUtilities.matrix_avg_std(U0es)
         T0e_mean, T0e_std = QDSimUtilities.matrix_avg_std(T0es)
         ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs)
 
-        outgrouphdf5 = Utilities.create_and_select_group(solver_group, outgroup)
-        Utilities.check_or_insert_value(solver_group, "dt", sim.dt / units.time_unit)
-        Utilities.check_or_insert_value(solver_group, "time_unit", units.time_unit)
-        Utilities.check_or_insert_value(solver_group, "time", time)
+        outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
+        Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
+        Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
+        Utilities.check_or_insert_value(data, "time", time)
         Utilities.check_or_insert_value(outgrouphdf5, "time", time)
         Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
 
-        Utilities.check_or_insert_value(solver_group, "U0e", U0e_mean)
-        Utilities.check_or_insert_value(solver_group, "U0e_std", U0e_std)
+        Utilities.check_or_insert_value(data, "U0e", U0e_mean)
+        Utilities.check_or_insert_value(data, "U0e_std", U0e_std)
 
-        Utilities.check_or_insert_value(solver_group, "T0e", T0e_mean)
-        Utilities.check_or_insert_value(solver_group, "T0e_std", T0e_std)
+        Utilities.check_or_insert_value(data, "T0e", T0e_mean)
+        Utilities.check_or_insert_value(data, "T0e_std", T0e_std)
 
         Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
         Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
         flush(outgrouphdf5)
 
-        flush(solver_group)
+        flush(data)
     end
-    solver_group
+    data
 end
 
 end
