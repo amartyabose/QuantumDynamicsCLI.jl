@@ -378,7 +378,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
     )
 
     transform = get(sim_node, "SW_transform", "QTransform")
-    solver = get(sim_node, "solver", "RK4")
+    solver = get(sim_node, "solver", "Verlet")
     transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
     solver_group = Utilities.create_and_select_group(transform_group, "solver=$solver")
     data = Utilities.create_and_select_group(solver_group, "average")
