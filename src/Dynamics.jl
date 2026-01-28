@@ -368,10 +368,10 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
         QDSimUtilities.print_citation(SpinLSC.references)
     end
 
-    transforms = Dict{String,Type{<:SpinLSC.SWTransform}}(
-        "QTransform" => SpinLSC.QTransform,
-        "WTransform" => SpinLSC.WTransform,
-        "PTransform" => SpinLSC.PTransform)
+    transforms = Dict{String,Type{<:Systems.SWTransform}}(
+        "QTransform" => Systems.QTransform,
+        "WTransform" => Systems.WTransform,
+        "PTransform" => Systems.PTransform)
     solvers = Dict{String,Type{<:SpinLSC.SpinLSCSolver}}(
         "RK4" => SpinLSC.RK4,
         "Verlet" => SpinLSC.Verlet,
@@ -446,6 +446,82 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
         Utilities.check_or_insert_value(data, "T0e", T0e_mean)
         Utilities.check_or_insert_value(data, "T0e_std", T0e_std)
 
+        Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
+        Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
+        flush(outgrouphdf5)
+
+        flush(data)
+    end
+    data
+end
+
+function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Units,
+                  sys::QDSimUtilities.System, bath::QDSimUtilities.Bath,
+                  sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group},
+                  sim_node; dry=false)
+    if !dry
+        @info "Running a Spin-PLDM calculation. Please cite:"
+        QDSimUtilities.print_citation(SpinPLDM.references)
+    end
+
+    transforms = Dict{String,Type{<:Systems.SWTransform}}(
+        "QTransform" => Systems.QTransform,
+        "WTransform" => Systems.WTransform,
+        "PTransform" => Systems.PTransform)
+
+    transform = get(sim_node, "SW_transform", "QTransform")
+    transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
+    data = Utilities.create_and_select_group(transform_group, "average")
+
+    ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
+    nbins = get(sim_node, "num_bins", 1)
+    nmc = sim_node["num_mc"]
+
+    for n in 1:nbins
+        Utilities.create_and_select_group(solver_group, "bin #$n")
+    end
+
+    outgroup = sim_node["outgroup"]
+
+    Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+
+    if !dry
+        @info "Running with $(Threads.nthreads()) threads."
+        ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
+
+        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
+        for n in 1:nbins
+            bin = Utilities.create_and_select_group(solver_group, "bin #$n")
+            Utilities.check_or_insert_value(bin, "num_mc", nmc)
+
+            outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
+            Utilities.check_or_insert_value(bin, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(bin, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(bin, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+            flush(bin)
+
+            @info "Calculating bin $n of $nbins"
+            ρ = SpinPLDM.propagate(; Hamiltonian=Hamiltonian, Jw=bath.Jw,
+                                   β=bath.β, num_osc=bath.num_osc,
+                                   ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
+                                   svec=bath.svecs,
+                                   transform=transforms[transform],
+                                   nmc=nmc, verbose=true,
+                                   outgroup=outgroup, output=bin)
+            ρs[n] = ρ
+        end
+
+        ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs)
+
+        outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
+        Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
+        Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
+        Utilities.check_or_insert_value(data, "time", time)
+        Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+        Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
         Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
         Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
         flush(outgrouphdf5)
