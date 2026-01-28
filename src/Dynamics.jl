@@ -479,7 +479,7 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
     nmc = sim_node["num_mc"]
 
     for n in 1:nbins
-        Utilities.create_and_select_group(solver_group, "bin #$n")
+        Utilities.create_and_select_group(transform_group, "bin #$n")
     end
 
     outgroup = sim_node["outgroup"]
@@ -492,7 +492,7 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
 
         time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
         for n in 1:nbins
-            bin = Utilities.create_and_select_group(solver_group, "bin #$n")
+            bin = Utilities.create_and_select_group(transform_group, "bin #$n")
             Utilities.check_or_insert_value(bin, "num_mc", nmc)
 
             outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
