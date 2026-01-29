@@ -469,7 +469,7 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
         "WTransform" => Systems.WTransform,
         "PTransform" => Systems.PTransform)
 
-    transform = get(sim_node, "SW_transform", "QTransform")
+    transform = get(sim_node, "SW_transform", "WTransform")
     transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
     data = Utilities.create_and_select_group(transform_group, "average")
 
