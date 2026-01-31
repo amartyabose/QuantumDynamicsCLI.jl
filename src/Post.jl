@@ -76,7 +76,8 @@ function calculate_print_observable(::QDSimUtilities.Calculation"dynamics", sys:
             elseif obs["observable"] == "vonNeumann_entropy"
                 values = [-tr(ρs[j, :, :] * log(ρs[j, :, :])) for j in axes(ρs, 1)]
             else
-                obs = ParseInput.parse_operator(obs["observable"], sys.Hamiltonian)
+                obs = ParseInput.parse_operator(obs["observable"], sys.Hamiltonian;
+                                                mat_type=get(obs, "type", "real"))
                 values = Utilities.expect(ρs, obs)
             end
             _, valft = ft ? Utilities.fourier_transform(ts, values; full=full) : (ts, values)

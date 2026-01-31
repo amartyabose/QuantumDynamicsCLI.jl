@@ -242,7 +242,7 @@ function parse_sim(sim, unit)
     QDSimUtilities.Simulation(name, calculation, method, output, dt, nsteps)
 end
 
-function parse_operator(op, Hamiltonian)
+function parse_operator(op, Hamiltonian; mat_type::String="real")
     obs = zero(Hamiltonian)
     if startswith(op, "P_")
         state = parse(Int64, split(op, "_")[2])
@@ -262,7 +262,7 @@ function parse_operator(op, Hamiltonian)
         end
         obs
     else
-        ParseInput.read_matrix(op)
+        ParseInput.read_matrix(op, mat_type)
     end
 end
 
