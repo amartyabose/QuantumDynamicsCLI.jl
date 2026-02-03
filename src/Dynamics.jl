@@ -425,7 +425,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
             @info "Calculating bin $n of $nbins"
             U0e, ρ = SpinLSC.propagate(; Hamiltonian=Hamiltonian, Jw=bath.Jw,
-                                       β=bath.β, num_bath_modes=bath.num_osc,
+                                       β=bath.β, num_osc=bath.num_osc,
                                        ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
                                        svec=bath.svecs,
                                        transform=transforms[transform],
