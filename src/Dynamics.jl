@@ -402,10 +402,12 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
     Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
 
+    build_dynmap = get(sim_node, "build_dynamical_map", false)
+
     if !dry
         @info "Running with $(Threads.nthreads()) threads."
         ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
-        if !focused
+        if build_dynmap && !focused
             U0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
             T0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
         end
@@ -431,15 +433,16 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
                                        transform=transforms[transform],
                                        nmc=nmc, solver=solvers[solver],
                                        verbose=true, outgroup=outgroup,
-                                       focused, output=bin)
+                                       focused, build_dynamical_map=build_dynmap,
+                                       output=bin)
             ρs[n] = ρ
-            if !focused
+            if !isnothing(U0e)
                 U0es[n] = U0e
                 T0es[n] = read(bin["T0e"])
             end
         end
 
-        if !focused
+        if build_dynmap && !focused
             U0e_mean, U0e_std = QDSimUtilities.matrix_avg_std(U0es)
             T0e_mean, T0e_std = QDSimUtilities.matrix_avg_std(T0es)
         end
@@ -452,7 +455,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
         Utilities.check_or_insert_value(outgrouphdf5, "time", time)
         Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
 
-        if !focused
+        if build_dynmap && !focused
             Utilities.check_or_insert_value(data, "U0e", U0e_mean)
             Utilities.check_or_insert_value(data, "U0e_std", U0e_std)
 
