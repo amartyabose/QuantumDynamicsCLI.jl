@@ -372,13 +372,8 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
         "QTransform" => Systems.QTransform,
         "WTransform" => Systems.WTransform,
         "PTransform" => Systems.PTransform)
-    solvers = Dict{String,Type{<:SpinLSC.SpinLSCSolver}}(
-        "RK4" => SpinLSC.RK4,
-        "Verlet" => SpinLSC.Verlet,
-    )
 
     transform = get(sim_node, "SW_transform", "QTransform")
-    solver = get(sim_node, "solver", "Verlet")
     focused = get(sim_node, "focused_sampling", false)
 
     ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
@@ -387,8 +382,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
                        "Focused initial sampling is only supported for ρ₀ of form |n⟩⟨n|")
 
     transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
-    solver_group = Utilities.create_and_select_group(transform_group, "solver=$solver")
-    sampling_group = Utilities.create_and_select_group(solver_group, "focused=$focused")
+    sampling_group = Utilities.create_and_select_group(transform_group, "focused=$focused")
     data = Utilities.create_and_select_group(sampling_group, "average")
 
     nbins = get(sim_node, "num_bins", 1)
