@@ -7,6 +7,7 @@ using Comonicon
 using QuantumDynamics
 using DelimitedFiles
 using TOML
+using Statistics: mean, stdm
 using ..ParseInput, ..Simulate, ..QDSimUtilities
 
 """
@@ -19,6 +20,20 @@ Combine the source files `sources` into `output`. If `output` does not exist, it
 @cast function merge_into(sources::String...; output::String)
     for input in sources
         Utilities.merge_into(input, output)
+    end
+end
+
+function calculate_observable(sys::QDSimUtilities.System, ρ::AbstractArray{<:Complex,3}, obs::String;
+                              mat_type::String="real")
+    if obs == "trace"
+        [tr(ρs[j, :, :]) for j in axes(ρ, 1)]
+    elseif obs == "purity"
+        [tr(ρs[j, :, :] * ρ[j, :, :]) for j in axes(ρ, 1)]
+    elseif obs == "vonNeumann_entropy"
+        [-tr(ρs[j, :, :] * log(ρ[j, :, :])) for j in axes(ρ, 1)]
+    else
+        op = ParseInput.parse_operator(obs, sys.Hamiltonian; mat_type)
+        Utilities.expect(ρ, op)
     end
 end
 
@@ -51,13 +66,21 @@ function calculate_print_observable(::QDSimUtilities.Calculation"dynamics", sys:
         end
     else
         outputdir = sim_node["outgroup"]
-        data_node = Simulate.calc(QDSimUtilities.Calculation(sim.calculation)(), sys, bath, sim, units, sim_node, method_group; dry=true)[outputdir]
-        ts = read_dataset(data_node, "time")
+        root_node = Simulate.calc(QDSimUtilities.Calculation(sim.calculation)(), sys, bath, sim, units, sim_node, method_group; dry=true)
+        # This is a MC method.
+        if !haskey(root_node, outputdir)
+            nbins = read_dataset(root_node, "num_bins")
+            ρs = [ read(root_node["bin #$b"][outputdir]["rho"]) for b in 1:nbins ]
+            ts = read(root_node["bin #1"][outputdir]["time"])
+        else
+            nbins = 1
+            ρs = [ read(root_node[outputdir]["rho"]) ]
+            ts = read(root_node[outputdir]["time"])
+        end
         dt = (ts[2] - ts[1]) * units.time_unit
         ωlim = π/dt
         dω = π/(ts[end] * units.time_unit)
         ω = -ωlim:dω:ωlim
-        ρs = read_dataset(data_node, "rho")
         num_obs = length(sim_node["observable"])
         names = String[]
         ft = get(sim_node, "fourier_transform", false)
@@ -65,23 +88,26 @@ function calculate_print_observable(::QDSimUtilities.Calculation"dynamics", sys:
         if ft
             full = get(sim_node, "full_transform", true)
         end
-        vals = ft ? zeros(ComplexF64, length(ω), num_obs) : zeros(ComplexF64, length(ts), num_obs)
-        values = ft ? zeros(ComplexF64, length(ω)) : zeros(ComplexF64, length(ts))
+        vals = zeros(ComplexF64, length(ft ? ωs : ts), num_obs)
+        vals_std = similar(vals)
+        values = zeros(ComplexF64, length(ft ? ωs : ts), nbins)
         for (os, obs) in enumerate(sim_node["observable"])
             push!(names, obs["observable"])
-            if obs["observable"] == "trace"
-                values .= [tr(ρs[j, :, :]) for j in axes(ρs, 1)]
-            elseif obs["observable"] == "purity"
-                values .= [tr(ρs[j, :, :] * ρs[j, :, :]) for j in axes(ρs, 1)]
-            elseif obs["observable"] == "vonNeumann_entropy"
-                values = [-tr(ρs[j, :, :] * log(ρs[j, :, :])) for j in axes(ρs, 1)]
-            else
-                obs = ParseInput.parse_operator(obs["observable"], sys.Hamiltonian;
-                                                mat_type=get(obs, "type", "real"))
-                values = Utilities.expect(ρs, obs)
+            for b in 1:nbins
+                values[:,b] .= calculate_observable(sys, ρs[b], obs["observable"];
+                                                    mat_type=get(obs, "type", "real"))
+                if ft
+                    _, values[:,b] = Utilities.fourier_transform(ts, values[:, b]; full)
+                end
             end
-            _, valft = ft ? Utilities.fourier_transform(ts, values; full=full) : (ts, values)
-            vals[:, os] .= ft ? valft : valft
+            if nbins > 1
+                vals[:, os] .= mean(real.(values); dims=2)[:,1] .+
+                         im .* mean(imag.(values); dims=2)[:,1]
+                vals_std[:, os] .= stdm(real.(values), real(vals[:, os]); dims=2)[:,1] .+
+                             im .* stdm(imag.(values), imag(vals[:, os]); dims=2)[:,1]
+            else
+                vals[:, os] .= values[:,1]
+            end
         end
 
         obs_file = sim_node["observable_output"]
@@ -89,35 +115,47 @@ function calculate_print_observable(::QDSimUtilities.Calculation"dynamics", sys:
 
         open("$(fname)_real$(ext)", "w") do io
             if ft
-                write(io, "# (1)w ")
+                write(io, "# (1)w")
             else
-                write(io, "# (1)t ")
+                write(io, "# (1)t")
             end
             for (j, n) in enumerate(names)
-                write(io, "($(j+1))$(n) ")
+                write(io, "\t($(j+1))$(n)")
+            end
+            nbins > 1 && for (j,n) in enumerate(names)
+                write(io, "\t($(j+1+num_obs))$n std")
             end
             write(io, "\n")
-            if ft
-                writedlm(io, [round.(ω ./ units.energy_unit; sigdigits=10) round.(real.(vals); sigdigits=10)])
+            if nbins > 1
+                writedlm(io, hcat(round.(ft ? ω ./ units.energy_unit : ts; sigdigits=10),
+                                  round.(real.(vals); sigdigits=10),
+                                  round.(real.(vals_std); sigdigits=10)))
             else
-                writedlm(io, [round.(ts; sigdigits=10) round.(real.(vals); sigdigits=10)])
+                writedlm(io, hcat(round.(ft ? ω ./ units.energy_unit : ts; sigdigits=10),
+                                  round.(real.(vals); sigdigits=10)))
             end
         end
 
         open("$(fname)_imag$(ext)", "w") do io
             if ft
-                write(io, "# (1)w ")
+                write(io, "# (1)w")
             else
-                write(io, "# (1)t ")
+                write(io, "# (1)t")
             end
             for (j, n) in enumerate(names)
-                write(io, "($(j+1))$(n) ")
+                write(io, "\t($(j+1))$(n)")
+            end
+            nbins > 1 && for (j,n) in enumerate(names)
+                write(io, "\t($(j+1+num_obs))$n std")
             end
             write(io, "\n")
-            if ft
-                writedlm(io, [round.(ω ./ units.energy_unit; sigdigits=10) round.(imag.(vals); sigdigits=10)])
+            if nbins > 1
+                writedlm(io, hcat(round.(ft ? ω ./ units.energy_unit : ts; sigdigits=10),
+                                  round.(imag.(vals); sigdigits=10),
+                                  round.(imag.(vals_std); sigdigits=10)))
             else
-                writedlm(io, [round.(ts; sigdigits=10) round.(imag.(vals); sigdigits=10)])
+                writedlm(io, hcat(round.(ft ? ω ./ units.energy_unit : ts; sigdigits=10),
+                                  round.(imag.(vals); sigdigits=10)))
             end
         end
     end

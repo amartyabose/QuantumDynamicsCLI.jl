@@ -382,14 +382,14 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
                        "Focused initial sampling is only supported for ρ₀ of form |n⟩⟨n|")
 
     transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
-    sampling_group = Utilities.create_and_select_group(transform_group, "focused=$focused")
-    data = Utilities.create_and_select_group(sampling_group, "average")
+    data = Utilities.create_and_select_group(transform_group, "focused=$focused")
 
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
 
+    Utilities.check_or_insert_value(data, "num_bins", nbins)
     for n in 1:nbins
-        Utilities.create_and_select_group(sampling_group, "bin #$n")
+        Utilities.create_and_select_group(data, "bin #$n")
     end
 
     outgroup = sim_node["outgroup"]
@@ -400,15 +400,10 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
     if !dry
         @info "Running with $(Threads.nthreads()) threads."
-        ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
-        if build_dynmap && !focused
-            U0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
-            T0es = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
-        end
 
         time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
         for n in 1:nbins
-            bin = Utilities.create_and_select_group(sampling_group, "bin #$n")
+            bin = Utilities.create_and_select_group(data, "bin #$n")
             Utilities.check_or_insert_value(bin, "num_mc", nmc)
 
             outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
@@ -429,38 +424,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
                                        verbose=true, outgroup=outgroup,
                                        focused, build_dynamical_map=build_dynmap,
                                        output=bin)
-            ρs[n] = ρ
-            if !isnothing(U0e)
-                U0es[n] = U0e
-                T0es[n] = read(bin["T0e"])
-            end
         end
-
-        if build_dynmap && !focused
-            U0e_mean, U0e_std = QDSimUtilities.matrix_avg_std(U0es)
-            T0e_mean, T0e_std = QDSimUtilities.matrix_avg_std(T0es)
-        end
-        ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs)
-
-        outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
-        Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
-        Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
-        Utilities.check_or_insert_value(data, "time", time)
-        Utilities.check_or_insert_value(outgrouphdf5, "time", time)
-        Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
-
-        if build_dynmap && !focused
-            Utilities.check_or_insert_value(data, "U0e", U0e_mean)
-            Utilities.check_or_insert_value(data, "U0e_std", U0e_std)
-
-            Utilities.check_or_insert_value(data, "T0e", T0e_mean)
-            Utilities.check_or_insert_value(data, "T0e_std", T0e_std)
-        end
-
-        Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
-        Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
-        flush(outgrouphdf5)
-
         flush(data)
     end
     data
@@ -481,16 +445,16 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
         "PTransform" => Systems.PTransform)
 
     transform = get(sim_node, "SW_transform", "WTransform")
-    transform_group = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
-    data = Utilities.create_and_select_group(transform_group, "average")
+    data = Utilities.create_and_select_group(dt_group, "SW_transform=$transform")
 
     ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
 
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
 
+    Utilities.check_or_insert_value(data, "num_bins", nbins)
     for n in 1:nbins
-        Utilities.create_and_select_group(transform_group, "bin #$n")
+        Utilities.create_and_select_group(data, "bin #$n")
     end
 
     outgroup = sim_node["outgroup"]
@@ -499,11 +463,10 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
 
     if !dry
         @info "Running with $(Threads.nthreads()) threads."
-        ρs = Vector{AbstractArray{<:Complex,3}}(undef, nbins)
 
         time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
         for n in 1:nbins
-            bin = Utilities.create_and_select_group(transform_group, "bin #$n")
+            bin = Utilities.create_and_select_group(data, "bin #$n")
             Utilities.check_or_insert_value(bin, "num_mc", nmc)
 
             outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
@@ -522,21 +485,7 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
                                    transform=transforms[transform],
                                    nmc=nmc, verbose=true,
                                    outgroup=outgroup, output=bin)
-            ρs[n] = ρ
         end
-
-        ρ_mean, ρ_std = QDSimUtilities.matrix_avg_std(ρs)
-
-        outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
-        Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
-        Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
-        Utilities.check_or_insert_value(data, "time", time)
-        Utilities.check_or_insert_value(outgrouphdf5, "time", time)
-        Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
-        Utilities.check_or_insert_value(outgrouphdf5, "rho", ρ_mean)
-        Utilities.check_or_insert_value(outgrouphdf5, "rho_std", ρ_std)
-        flush(outgrouphdf5)
-
         flush(data)
     end
     data
