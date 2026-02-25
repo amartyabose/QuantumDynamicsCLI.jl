@@ -420,8 +420,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
                                        ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
                                        svec=bath.svecs,
                                        transform=transforms[transform],
-                                       nmc=nmc, solver=solvers[solver],
-                                       verbose=true, outgroup=outgroup,
+                                       nmc=nmc, verbose=true, outgroup=outgroup,
                                        focused, build_dynamical_map=build_dynmap,
                                        output=bin)
         end
