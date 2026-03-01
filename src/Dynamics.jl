@@ -420,8 +420,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
                                        ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
                                        svec=bath.svecs,
                                        transform=transforms[transform],
-                                       nmc=nmc, solver=solvers[solver],
-                                       verbose=true, outgroup=outgroup,
+                                       nmc=nmc, verbose=true, outgroup=outgroup,
                                        focused, build_dynamical_map=build_dynmap,
                                        output=bin)
         end
@@ -485,6 +484,112 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
                                    transform=transforms[transform],
                                    nmc=nmc, verbose=true,
                                    outgroup=outgroup, output=bin)
+        end
+        flush(data)
+    end
+    data
+end
+
+function dynamics(::QDSimUtilities.Method"PLDM", units::QDSimUtilities.Units,
+                  sys::QDSimUtilities.System, bath::QDSimUtilities.Bath,
+                  sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group},
+                  sim_node; dry=false)
+    if !dry
+        @info "Running a PLDM calculation. Please cite:"
+        QDSimUtilities.print_citation(PLDM.references)
+    end
+
+    data = dt_group
+
+    ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
+    nbins = get(sim_node, "num_bins", 1)
+    nmc = sim_node["num_mc"]
+
+    Utilities.check_or_insert_value(data, "num_bins", nbins)
+    for n in 1:nbins
+        Utilities.create_and_select_group(data, "bin #$n")
+    end
+
+    outgroup = sim_node["outgroup"]
+
+    Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+
+    if !dry
+        @info "Running with $(Threads.nthreads()) threads."
+
+        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
+        for n in 1:nbins
+            bin = Utilities.create_and_select_group(data, "bin #$n")
+            Utilities.check_or_insert_value(bin, "num_mc", nmc)
+
+            outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
+            Utilities.check_or_insert_value(bin, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(bin, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(bin, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+            flush(bin)
+
+            @info "Calculating bin $n of $nbins"
+            ρ = PLDM.propagate(; Hamiltonian=Hamiltonian, Jw=bath.Jw,
+                               β=bath.β, num_osc=bath.num_osc,
+                               ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
+                               svec=bath.svecs, nmc=nmc, verbose=true,
+                               outgroup=outgroup, output=bin)
+        end
+        flush(data)
+    end
+    data
+end
+
+function dynamics(::QDSimUtilities.Method"LSC", units::QDSimUtilities.Units,
+                  sys::QDSimUtilities.System, bath::QDSimUtilities.Bath,
+                  sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group},
+                  sim_node; dry=false)
+    if !dry
+        @info "Running a MMST-LSC calculation. Please cite:"
+        QDSimUtilities.print_citation(LSC.references)
+    end
+
+    data = dt_group
+
+    ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
+    nbins = get(sim_node, "num_bins", 1)
+    nmc = sim_node["num_mc"]
+
+    Utilities.check_or_insert_value(data, "num_bins", nbins)
+    for n in 1:nbins
+        Utilities.create_and_select_group(data, "bin #$n")
+    end
+
+    outgroup = sim_node["outgroup"]
+
+    Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+
+    if !dry
+        @info "Running with $(Threads.nthreads()) threads."
+
+        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
+        for n in 1:nbins
+            bin = Utilities.create_and_select_group(data, "bin #$n")
+            Utilities.check_or_insert_value(bin, "num_mc", nmc)
+
+            outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
+            Utilities.check_or_insert_value(bin, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(bin, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(bin, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+            flush(bin)
+
+            @info "Calculating bin $n of $nbins"
+            ρ = LSC.propagate(; Hamiltonian=Hamiltonian, Jw=bath.Jw,
+                              β=bath.β, num_osc=bath.num_osc,
+                              ρ0=ρ0, dt=sim.dt, ntimes=sim.nsteps,
+                              svec=bath.svecs, nmc=nmc, verbose=true,
+                              outgroup=outgroup, output=bin)
         end
         flush(data)
     end
