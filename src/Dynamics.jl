@@ -71,7 +71,7 @@ function dynamics(::QDSimUtilities.Method"QuAPI", units::QDSimUtilities.Units, s
         data = Utilities.create_and_select_group(data, outgroup)
         Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
         Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
-        Utilities.check_or_insert_value(data, "time", 0:sim.dt/units.time_unit:rmax*sim.dt/units.time_unit |> collect)
+        Utilities.check_or_insert_value(data, "time", 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect)
         flush(data)
 
         extraargs = QuAPI.QuAPIArgs(; cutoff)
@@ -86,7 +86,7 @@ function dynamics(::QDSimUtilities.Method"QuAPI", units::QDSimUtilities.Units, s
 
         ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
 
-        fbU = Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=rmax, L)
+        fbU = Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, L)
         Utilities.check_or_insert_value(data, "fbU", fbU)
         flush(data)
 

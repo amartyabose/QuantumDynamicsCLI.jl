@@ -1,0 +1,13 @@
+[simulation]
+name = "asymmetric-spin-boson"
+method = "LSC"
+output = "output.hdf5"
+
+nsteps = 100
+dt = 0.25
+
+num_bins = 10
+num_mc = 10000
+
+rho0 = "P_1"
+outgroup = "init_1"

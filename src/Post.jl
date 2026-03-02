@@ -23,17 +23,17 @@ Combine the source files `sources` into `output`. If `output` does not exist, it
     end
 end
 
-function calculate_observable(sys::QDSimUtilities.System, ρ::AbstractArray{<:Complex,3}, obs::String;
+function calculate_observable(sys::QDSimUtilities.System, ρs::AbstractArray{<:Complex,3}, obs::String;
                               mat_type::String="real")
     if obs == "trace"
-        [tr(ρs[j, :, :]) for j in axes(ρ, 1)]
+        [tr(ρs[j, :, :]) for j in axes(ρs, 1)]
     elseif obs == "purity"
-        [tr(ρs[j, :, :] * ρ[j, :, :]) for j in axes(ρ, 1)]
+        [tr(ρs[j, :, :] * ρs[j, :, :]) for j in axes(ρs, 1)]
     elseif obs == "vonNeumann_entropy"
-        [-tr(ρs[j, :, :] * log(ρ[j, :, :])) for j in axes(ρ, 1)]
+        [-tr(ρs[j, :, :] * log(ρs[j, :, :])) for j in axes(ρs, 1)]
     else
         op = ParseInput.parse_operator(obs, sys.Hamiltonian; mat_type)
-        Utilities.expect(ρ, op)
+        Utilities.expect(ρs, op)
     end
 end
 

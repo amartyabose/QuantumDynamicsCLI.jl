@@ -1,0 +1,14 @@
+[simulation]
+name = "symmetric-spin-boson"
+method = "TEMPO"
+output = "output.hdf5"
+
+nsteps = 100
+dt = 0.25
+kmax = 9
+
+maxdim = 500
+cutoff = 1e-10
+
+rho0 = "P_1"
+outgroup = "init_1"
