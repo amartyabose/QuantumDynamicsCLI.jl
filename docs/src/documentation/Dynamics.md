@@ -7,7 +7,7 @@ Various methods of simulation are supported:
     - Time-Evolved Matrix Product Operators (TEMPO) [strathearnEfficientNonMarkovianQuantum2018](@cite)
     - Pairwise-Connected Tensor Network Path Integral (PC-TNPI) [bosePairwiseConnectedTensor2022](@cite)
 - Semiclassical Dynamics using Meyer-Miller-Stock-Thoss Hamiltonian
-    - Partially Linearized Semiclassical Dynamics (PLDM) [huoCommunicationPartialLinearized2011, huoConsistentSchemesNonadiabatic2012](@cite)
+	- Partially Linearized Semiclassical Dynamics (PLDM) [huoCommunicationPartialLinearized2011, huoConsistentSchemesNonadiabatic2012](@cite)
 	- Linearized Semiclassical Initial Value Representation (LSC-IVR)
 	- Spin-Mapping Approaches to PLDM [mannouchPartiallyLinearizedSpinMapping2020a, mannouchPartiallyLinearizedSpinMapping2020a](@cite) and LSC-IVR
 - Hierarchical Equations of Motion (HEOM) [tanimuraNumericallyExactApproach2020](@cite)
