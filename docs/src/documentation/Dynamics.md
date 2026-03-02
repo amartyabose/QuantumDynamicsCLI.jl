@@ -7,9 +7,9 @@ Various methods of simulation are supported:
     - Time-Evolved Matrix Product Operators (TEMPO) [strathearnEfficientNonMarkovianQuantum2018](@cite)
     - Pairwise-Connected Tensor Network Path Integral (PC-TNPI) [bosePairwiseConnectedTensor2022](@cite)
 - Semiclassical Dynamics using Meyer-Miller-Stock-Thoss Hamiltonian
-	- Partially Linearized Semiclassical Dynamics (PLDM) [huoCommunicationPartialLinearized2011, huoConsistentSchemesNonadiabatic2012](@cite)
-	- Linearized Semiclassical Initial Value Representation (LSC-IVR)
-	- Spin-Mapping Approaches to PLDM [mannouchPartiallyLinearizedSpinMapping2020a, mannouchPartiallyLinearizedSpinMapping2020a](@cite) and LSC-IVR
+    - Partially Linearized Semiclassical Dynamics (PLDM) [huoCommunicationPartialLinearized2011, huoConsistentSchemesNonadiabatic2012](@cite)
+    - Linearized Semiclassical Initial Value Representation (LSC-IVR)
+    - Spin-Mapping Approaches to PLDM [mannouchPartiallyLinearizedSpinmapping2020a, mannouchPartiallyLinearizedSpinmapping2020](@cite) and LSC-IVR
 - Hierarchical Equations of Motion (HEOM) [tanimuraNumericallyExactApproach2020](@cite)
 - Generalized Quantum Master Equation (GQME) [nakajimaQuantumTheoryTransport1958, zwanzigIdentityThreeGeneralized1964](@cite)
 - Multichromophore Incoherest Forster Resonance Energy Transfer [forsterZwischenmolekulareEnergiewanderungUnd1948, jangMultichromophoricForsterResonance2004](@cite)
