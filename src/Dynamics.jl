@@ -53,6 +53,48 @@ function dynamics(::QDSimUtilities.Method"TEMPO-TTM", units::QDSimUtilities.Unit
     data
 end
 
+function dynamics(::QDSimUtilities.Method"QuAPI", units::QDSimUtilities.Units, sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group}, sim_node; dry=false)
+    if !dry
+        @info "Running a QuAPI calculation. Please cite:"
+        QDSimUtilities.print_citation(QuAPI.references)
+    end
+    kmax = sim_node["kmax"]
+    kmax_group = Utilities.create_and_select_group(dt_group, "kmax=$(kmax)")
+    cutoff = get(sim_node, "cutoff", 1e-10)
+    data = Utilities.create_and_select_group(kmax_group, "cutoff=$(cutoff)")
+    exec = get(sim_node, "exec", "ThreadedEx")
+    if exec != "SequentialEx"
+        @info "Running with $(Threads.nthreads()) threads."
+    end
+    outgroup = sim_node["outgroup"]
+    if !dry
+        data = Utilities.create_and_select_group(data, outgroup)
+        Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
+        Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
+        Utilities.check_or_insert_value(data, "time", 0:sim.dt/units.time_unit:rmax*sim.dt/units.time_unit |> collect)
+        flush(data)
+
+        extraargs = QuAPI.QuAPIArgs(; cutoff)
+        if haskey(sim_node, "lindblad")
+            @info "Using the PILD method."
+            QDSimUtilities.print_citation(PILD_reference)
+            decayconstant = [sim_node["decay_constant"][i] for i in 1:length(sim_node["decay_constant"])]
+            L = [ParseInput.parse_operator(sim_node["lindblad"][i], sys.Hamiltonian) / sqrt(decayconstant[i] * units.time_unit) for i in 1:length(sim_node["decay_constant"])]
+        else
+            L = nothing
+        end
+
+        ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
+        fbU = Propagators.calculate_bare_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=rmax, L)
+        Utilities.check_or_insert_value(data, "fbU", fbU)
+        flush(data)
+
+        QuAPI.propagate(; fbU, Jw=bath.Jw, β=bath.β, ρ0, dt=sim.dt, ntimes=sim.nsteps, kmax, extraargs, svec=bath.svecs, verbose=true, output=data, exec=QDSimUtilities.parse_exec(exec))
+    end
+    data
+end
+
 function dynamics(::QDSimUtilities.Method"QuAPI-TTM", units::QDSimUtilities.Units, sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group}, sim_node; dry=false)
     if !dry
         @info "Running a QuAPI calculation with TTM. Please cite:"
