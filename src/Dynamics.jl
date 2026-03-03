@@ -90,7 +90,7 @@ function dynamics(::QDSimUtilities.Method"QuAPI", units::QDSimUtilities.Units, s
         Utilities.check_or_insert_value(data, "fbU", fbU)
         flush(data)
 
-        QuAPI.propagate(; fbU, Jw=bath.Jw, β=bath.β, ρ0, dt=sim.dt, ntimes=sim.nsteps, kmax, extraargs, svec=bath.svecs, verbose=true, output=data)
+        QuAPI.propagate(; fbU, Jw=bath.Jw, β=bath.β, ρ0, dt=sim.dt, ntimes=sim.nsteps, kmax, extraargs, svec=bath.svecs, verbose=true, output=data, exec=QDSimUtilities.parse_exec(exec))
     end
     data
 end

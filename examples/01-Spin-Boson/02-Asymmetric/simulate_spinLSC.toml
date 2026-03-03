@@ -3,8 +3,8 @@ name = "asymmetric-spin-boson"
 method = "Spin-LSC"
 output = "output.hdf5"
 
-nsteps = 100
-dt = 0.25
+nsteps = 250
+dt = 0.1
 
 num_bins = 10
 num_mc = 10000
