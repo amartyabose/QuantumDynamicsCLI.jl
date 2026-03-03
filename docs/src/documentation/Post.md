@@ -2,6 +2,10 @@
 
 Once the simulation is done using the `simulate` subcommand of `qdsim`, various post-processing can be done using its `post` subcommand.
 
+```@docs
+QuantumDynamicsCLI.Post
+```
+
 ## qdsim post get-observable
 
 ### Post-processing of `dynamics` simulation
