@@ -19,6 +19,12 @@ Various methods of simulation are supported:
 All of these dynamics methods require some core common parameters and then more specfic method-dependent parameters. The core parameters of all the dynamics methods are:
 - `dt`: for the time-step in the units specified in the system file
 - `nsteps`: for the number of steps of simulation of the dynamics
+- `rho0`: the initial reduced density matrix
+- `outgroup`: where to store the computed density matrix in the HDF5 file (i.e., the group name)
+
+## Specifying the initial reduced density matrix
+
+The simplest way to specify the initial density matrix is to set the `rho0` parameter to a file which will be parsed as a matrix. However, convenient shortcuts exist to specify most commonly used values of `rho0`, these are explained in the documentation of [QuantumDynamicsCLI.ParseInput.parse_operator](@ref).
 
 ## Feynman-Vernon Influence Functional Simulations
 
@@ -65,15 +71,16 @@ $10^{-10}$ and $1000$ respectively.
 
 ## Semiclassical Simulations
 
-We provide both the PLDM family of methods and the LSC-IVR family of
-methods.
+We provide two mapping Hamiltonian based class of semiclassical methods: Meyer-Miller-Stock-Thoss mapping, and Spin-mapping. Both the PLDM and the LSC-IVR family of semiclassical methods are available. To use these methods, say `method = "$METHOD"` where `$METHOD` is one of:
+- `LSC` or `PLDM` for the fully or partially linearized semiclassical dynamics using MMST mapping for the system degrees of freedom
+- `Spin-LSC` or `Spin-PLDM` for the corresponding spin-mapped variants
 
-### Partially Linearized Density Matrix
+As these methods perform a Monte-Carlo average to calculate the reduced density matrix, the following parameters must be set for all these methods:
+- `num_bins`: the number of independent bins to calculate the average and standard deviation of the observables with
+- `num_mc`: the number of trajectories for each bin
 
-Both PLDM and Spin-PLDM are implemented --- chosen by `method =
-"PLDM"` and `method = "Spin-PLDM"` respectively.
+Apart from this, the spin-mapped semiclassical methods offer the choice of choosing the corresponding Stratonovich--Weyl kernel to use for transformation of the Hamiltonian of the system and the initial (reduced) density matrix. This is set by the `SW_transform` keyword, and the supported values are `QTransform`, `PTransform` and `WTransform`. By default, Spin-LSC uses `QTransform` and Spin-PLDM uses `WTransform`. **NOTE:** Spin-PLDM performs poorly with P and Q Stratonovich--Weyl kernels.
 
-### Linearized Semiclassical Initial Value Representation
+Focused initial sampling is currently only supported by Spin-LSC at the moment. Moreover, only `rho0` of the form $\ket{n}\bra{n}$ are supported currently. Focused sampling may be enabled for such initial reduced density matrices in Spin-LSC by setting the `focused_sampling` parameter to `true`.
 
-A choice between standard LSC and spin LSC is provided: `method =
-"LSC"` and `method = "Spin-LSC"` respectively.
+These methods _must_ specify the number of discrete oscillators for each `bath` mode via the `num_osc` parameter as specified in the [Bath Hamiltonian](@ref) section.

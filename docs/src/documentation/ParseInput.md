@@ -33,6 +33,14 @@ QuantumDynamicsCLI.ParseInput.parse_bath
 QuantumDynamicsCLI.ParseInput.get_bath
 ```
 
+### Specifying Operators
+
+The specification of operators need to be specified in multiple places. Convenient shorthands for the specification of most commonly used operators. These can be used to specify the initial reduced density matrix as well.
+
+```@docs
+QuantumDynamicsCLI.ParseInput.parse_operator
+```
+
 ## Simulation File
 The simulation file has only a single TOML section `[simulation]`. Every simulation file should have a `name` to identify the simulation and an `output` file that specifies an HDF5 file for storing all the data.
 

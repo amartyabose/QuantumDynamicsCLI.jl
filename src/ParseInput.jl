@@ -114,10 +114,10 @@ end
     get_bath(b, unit)
 Parse individual baths
 
-Parameters:
+ Parameters:
 - `type` [Default: `ohmic`]: Type of harmonic bath. Can be `ohmic`, `drude_lorentz`, `tabular`, `tabular_jw_over_w`, `huang_rhys`
-
-The parameters for the bath are specified in different ways for each different bath:
+- `num_osc`: Number of oscillators to discretise the bath to
+ The parameters for the bath are specified in different ways for each different bath:
 - if `type="ohmic"`, the bath spectral density ``J(\\omega)=\\frac{2\\pi}{\\Delta s^2}\\hbar\\xi\\omega_c\\exp\\left(-\\frac{\\omega}{\\omega_c}\\right)``
     - `xi`: dimensionless Kondo parameter (``\\xi``)
     - `omegac`: cutoff frequency (``\\omega_c``) in energy units
@@ -242,6 +242,22 @@ function parse_sim(sim, unit)
     QDSimUtilities.Simulation(name, calculation, method, output, dt, nsteps)
 end
 
+"""
+    parse_operator(op, Hamiltonian; mat_type::String="real")
+
+Return the matrix form of the operator `op` for the system with given Hamiltonian.
+
+The following forms of `op` are recognised:
+- `P_n`: population of the `n`th state/the diagonal operator |n⟩⟨n|
+- `F_n`: rate of change of population of the `n`the state
+- `O_n,m`: the off-diagonal operator |n⟩⟨m|
+- `id`: the identity operator
+- anything else is interpretted as a file which contains the matrix
+  form of the operator
+
+For the last item, `mat_type` can be the string "complex" which implies
+that the matrix is complex.
+"""
 function parse_operator(op, Hamiltonian; mat_type::String="real")
     obs = zero(Hamiltonian)
     if startswith(op, "P_")
