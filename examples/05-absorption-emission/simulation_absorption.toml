@@ -1,0 +1,17 @@
+[simulation]
+name = "absorption"
+calculation = "complex_corr"
+method = "adaptive-kinks-QuAPI"
+output = "output_emission.hdf5"
+corr_type = "mixed"
+nsteps = 10
+dt = 4.0
+tfinal = 500.0
+fourier_transform = true
+conjugate = false
+A = "mup"
+B = "mum"
+partition_function = "Pexc"
+cutoff = 1e-8
+propagator_cutoff = 1e-4
+
