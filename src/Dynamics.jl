@@ -307,6 +307,61 @@ function dynamics(::QDSimUtilities.Method"TEMPO", units::QDSimUtilities.Units, s
     data
 end
 
+function dynamics(::QDSimUtilities.Method"EACP", units::QDSimUtilities.Units,
+                  sys::QDSimUtilities.System, bath::QDSimUtilities.Bath,
+                  sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group},
+                  sim_node; dry=false)
+    if !dry
+        @info "Running a EACP calculation. Please cite:"
+        # QDSimUtilities.print_citation(PLDM.references)
+    end
+
+    data = dt_group
+
+    ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
+    nbins = get(sim_node, "num_bins", 1)
+    nmc = sim_node["num_mc"]
+    reference_choice = sim_node["reference_choice"]
+
+    data = Utilities.create_and_select_group(data, reference_choice)
+    Utilities.check_or_insert_value(data, "num_bins", nbins)
+    for n in 1:nbins
+        Utilities.create_and_select_group(data, "bin #$n")
+    end
+
+    outgroup = sim_node["outgroup"]
+
+    if !dry
+        @info "Running with $(Threads.nthreads()) threads."
+
+        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
+        ω, c = QDSimUtilities.discretize(bath)
+        svecs = [bath.svecs[nb, :] for nb = 1:length(bath.Jw)]
+        hb = Solvents.HarmonicBath(; β=bath.β, ω, c, svecs, nsamples=nmc)
+        for n in 1:nbins
+            bin = Utilities.create_and_select_group(data, "bin #$n")
+            Utilities.check_or_insert_value(bin, "num_mc", nmc)
+
+            outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
+            Utilities.check_or_insert_value(bin, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(bin, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(bin, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+            flush(bin)
+
+            @info "Calculating bin $n of $nbins"
+            fbU = Propagators.calculate_average_reference_propagators(; Hamiltonian=sys.Hamiltonian, dt=sim.dt, ntimes=sim.nsteps, solvent=hb, classical_dt=sim.dt / 10, ρ0, reference_choice, verbose=true)
+            Utilities.check_or_insert_value(outgrouphdf5, "fbU", fbU)
+            _, ρs = Utilities.apply_propagator(; propagators=fbU, ρ0, ntimes=sim.nsteps, dt=sim.dt)
+            Utilities.check_or_insert_value(outgrouphdf5, "rho", ρs)
+        end
+        flush(data)
+    end
+    data
+end
+
 function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group}, sim_node; dry=false)
     if !dry
         @info "Running a HEOM calculation."

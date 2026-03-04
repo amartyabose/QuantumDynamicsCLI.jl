@@ -1,0 +1,20 @@
+[units]
+energy_unit_name = "cm^-1"
+time_unit_name = "fs"
+[system]
+Hamiltonian = "Hamiltonian"
+is_QuAPI = false
+[baths]
+temperature = 300.0
+[[baths.bath]]
+type = "tabular"
+jw_file = "spectral_density"
+Ds = 1.0
+svec = [1.0, 0.0]
+num_osc = 60
+[[baths.bath]]
+type = "tabular"
+jw_file = "spectral_density"
+Ds = 1.0
+svec = [0.0, 1.0]
+num_osc = 60

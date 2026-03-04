@@ -1,0 +1,13 @@
+[simulation]
+name = "dimer"
+method = "Spin-LSC"
+output = "output_mmspin.hdf5"
+
+nsteps = 100
+dt = 2
+
+num_bins = 10
+num_mc = 1000
+
+rho0 = "P_1"
+outgroup = "init_1"

@@ -35,6 +35,15 @@ struct Bath
     num_osc::Union{Nothing,AbstractVector{<:Integer}}
 end
 
+function discretize(bath::Bath)
+    ωs = [zeros(n) for n in bath.num_osc]
+    cs = [zeros(n) for n in bath.num_osc]
+    for (bathnum, (j, nosc)) in enumerate(zip(bath.Jw, bath.num_osc))
+        ωs[bathnum], cs[bathnum] = SpectralDensities.discretize(j, nosc)
+    end
+    ωs, cs
+end
+
 mutable struct Simulation
     name::String
     calculation::String

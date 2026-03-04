@@ -1,0 +1,167 @@
+[[simulation]]
+name = "dimer"
+method = "TEMPO"
+output = "output.hdf5"
+
+nsteps = 100
+dt = 2
+kmax = 100
+
+maxdim = 1000
+cutoff = 1e-10
+algorithm = "fit"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "TEMPO_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "EACP"
+output = "output_EACP.hdf5"
+
+nsteps = 100
+dt = 2
+
+num_bins = 10
+num_mc = 1000
+reference_choice = "max_prob"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "max_prob_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "EACP"
+output = "output_EACP.hdf5"
+
+nsteps = 100
+dt = 2
+
+num_bins = 10
+num_mc = 1000
+reference_choice = "dcsh"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "dcsh_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "EACP"
+output = "output_EACP.hdf5"
+
+nsteps = 100
+dt = 2
+
+num_bins = 10
+num_mc = 1000
+reference_choice = "ehrenfest"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "ehrenfest_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "EACP"
+output = "output_EACP.hdf5"
+
+nsteps = 100
+dt = 2
+
+num_bins = 10
+num_mc = 1000
+reference_choice = "fixed"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "fixed_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "Spin-LSC"
+output = "output_mmspin.hdf5"
+
+nsteps = 100
+dt = 2
+
+num_bins = 10
+num_mc = 1000
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "spinLSC_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"

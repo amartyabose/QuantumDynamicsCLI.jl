@@ -1,0 +1,14 @@
+[simulation]
+name = "dimer"
+method = "EACP"
+output = "output_EACP.hdf5"
+
+nsteps = 100
+dt = 2
+
+num_bins = 10
+num_mc = 1000
+reference_choice = "max_prob"
+
+rho0 = "P_1"
+outgroup = "init_1"

@@ -1,0 +1,15 @@
+[simulation]
+name = "dimer"
+method = "TEMPO"
+output = "output.hdf5"
+
+nsteps = 50
+dt = 4
+kmax = 20
+
+maxdim = 500
+cutoff = 1e-10
+algorithm = "fit"
+
+rho0 = "P_1"
+outgroup = "init_1"
