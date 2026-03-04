@@ -43,7 +43,7 @@ type = "complex"
 The TOML file must contain the `simulation` section, within with each observable is specified. Apart from the simulation details in the `simulation` section (such as the specification of the Stratonovich--Weyl kernel, time step, etc.), the specified parameter `observable_output` tells the output filename for the observables.
 
 The subsections `simulation.observable` specify the observable to calculate the expectation value for. These can contain the following parameters:
-- `observable`: this denotes the observable to compute and is like the `rho0` keyword in the `simulation` section (see also [QuantumDynamicsCLI.ParseInput.parse_operators](@ref)), but other quantities may be computed by specifying:
+- `observable`: this denotes the observable to compute and is like the `rho0` keyword in the `simulation` section (see also [the `parse_operator` function](@ref QuantumDynamicsCLI.ParseInput.parse_operator)), but other quantities may be computed by specifying:
   - `observable = "trace"`: computes the trace of the reduced density matrix
   - `observable = "purity"`: computes the purity of the reduced density matrix
   - `observable = "vonNeumann_entropy"`: computes the von Neumann entropy for the calculated density matrix
