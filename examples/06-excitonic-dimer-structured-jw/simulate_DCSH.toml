@@ -1,0 +1,15 @@
+[simulation]
+name = "dimer"
+method = "QCPI"
+output = "output_QCPI_dt2_5_kmax5.hdf5"
+
+nsteps = 20
+dt = 2.5
+kmax = 6
+
+num_bins = 10
+num_mc = 10000
+reference_choice = "dcsh"
+
+rho0 = "P_1"
+outgroup = "init_1"
