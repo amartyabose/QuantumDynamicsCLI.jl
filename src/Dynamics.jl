@@ -325,6 +325,7 @@ function dynamics(::QDSimUtilities.Method"EACP", units::QDSimUtilities.Units,
     reference_choice = sim_node["reference_choice"]
 
     data = Utilities.create_and_select_group(data, reference_choice)
+    data = Utilities.create_and_select_group(data, "total_mc=$(nbins * nmc)")
     Utilities.check_or_insert_value(data, "num_bins", nbins)
     for n in 1:nbins
         Utilities.create_and_select_group(data, "bin #$n")
@@ -367,7 +368,7 @@ function dynamics(::QDSimUtilities.Method"QCPI", units::QDSimUtilities.Units,
                   sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group},
                   sim_node; dry=false)
     if !dry
-        @info "Running a EACP calculation. Please cite:"
+        @info "Running a QCPI calculation. Please cite:"
         # QDSimUtilities.print_citation(PLDM.references)
     end
 
@@ -540,6 +541,7 @@ function dynamics(::QDSimUtilities.Method"Spin-LSC", units::QDSimUtilities.Units
 
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
+    data = Utilities.create_and_select_group(data, "total_mc=$(nbins * nmc)")
 
     Utilities.check_or_insert_value(data, "num_bins", nbins)
     for n in 1:nbins
@@ -604,6 +606,7 @@ function dynamics(::QDSimUtilities.Method"Spin-PLDM", units::QDSimUtilities.Unit
 
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
+    data = Utilities.create_and_select_group(data, "total_mc=$(nbins * nmc)")
 
     Utilities.check_or_insert_value(data, "num_bins", nbins)
     for n in 1:nbins
@@ -659,6 +662,7 @@ function dynamics(::QDSimUtilities.Method"PLDM", units::QDSimUtilities.Units,
 
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
+    data = Utilities.create_and_select_group(data, "total_mc=$(nbins * nmc)")
 
     Utilities.check_or_insert_value(data, "num_bins", nbins)
     for n in 1:nbins
@@ -712,6 +716,7 @@ function dynamics(::QDSimUtilities.Method"LSC", units::QDSimUtilities.Units,
 
     nbins = get(sim_node, "num_bins", 1)
     nmc = sim_node["num_mc"]
+    data = Utilities.create_and_select_group(data, "total_mc=$(nbins * nmc)")
 
     Utilities.check_or_insert_value(data, "num_bins", nbins)
     for n in 1:nbins
