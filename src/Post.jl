@@ -103,8 +103,8 @@ function calculate_print_observable(::QDSimUtilities.Calculation"dynamics", sys:
             if nbins > 1
                 vals[:, os] .= mean(real.(values); dims=2)[:,1] .+
                          im .* mean(imag.(values); dims=2)[:,1]
-                vals_std[:, os] .= stdm(real.(values), real(vals[:, os]); dims=2)[:,1] .+
-                             im .* stdm(imag.(values), imag(vals[:, os]); dims=2)[:,1]
+                vals_std[:, os] .= (stdm(real.(values), real(vals[:, os]); dims=2)[:,1] .+
+                              im .* stdm(imag.(values), imag(vals[:, os]); dims=2)[:,1]) / sqrt(nbins)
             else
                 vals[:, os] .= values[:,1]
             end
