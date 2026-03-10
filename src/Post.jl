@@ -247,7 +247,7 @@ end
     sys_file = TOML.parsefile(system_input)
     is_QuAPI = get(sys_file["system"], "is_QuAPI", true)
     if !is_QuAPI
-        sys.Hamiltonian .+= diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+        sys.Hamiltonian .+= diagm(sum([SpectralDensities.reorganization_energy(j) / units.energy_unit * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
     end
     sim_file = TOML.parsefile(simulate_input)
     for (ns, sim_node) in enumerate(sim_file["simulation"])
