@@ -7,6 +7,7 @@ using Comonicon
 using QuantumDynamics
 using DelimitedFiles
 using TOML
+using LinearAlgebra
 using Statistics: mean, stdm
 using ..ParseInput, ..Simulate, ..QDSimUtilities
 
@@ -193,6 +194,68 @@ end
         sim = ParseInput.parse_sim(sim_node, units)
         @assert isfile(sim.output) "File not present."
         calculate_print_observable(QDSimUtilities.Calculation(sim.calculation)(), sys, bath, sim, units, sim_node)
+    end
+end
+
+function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, units::QDSimUtilities.Units, sim_node)
+    out = h5open(sim.output, "r")
+    method_group = out["$(sim.name)/$(sim.calculation)/$(sim.method)"]
+    data_node = Simulate.calc(QDSimUtilities.Calculation(sim.calculation)(), sys, bath, sim, units, sim_node, method_group; dry=true)
+    outputdir = sim_node["outgroup"]
+    obs_file = sim_node["observable_output"]
+    fname, ext = splitext(obs_file)
+
+    ts = read(data_node[outputdir]["time"])
+    ρs = read(data_node[outputdir]["rho"])
+    if haskey(sim_node, "lindblad")
+        decayconstant = [sim_node["decay_constant"][i] for i in 1:length(sim_node["decay_constant"])]
+        L = [ParseInput.parse_operator(sim_node["lindblad"][i], sys.Hamiltonian) / sqrt(decayconstant[i] * units.time_unit) for i in 1:length(sim_node["decay_constant"])]
+    else
+        L = nothing
+    end
+    derivative = get(sim_node,"derivative", false)
+    ddt_flows, flows = Utilities.statetostate(;t=(ts * units.time_unit), ρs=ρs, H0=(sys.Hamiltonian * units.energy_unit), L=L)
+
+    for i in axes(flows,1)
+        header = []
+        push!(header,"#t")
+        for j in axes(flows,1)
+            push!(header,"#$(j)")
+        end
+
+        open("flows_in_state_$(i)_$(fname)_real$(ext)", "w") do io
+            writedlm(io, vcat(reshape(header,1,:), hcat(ts,real.(flows[i,:,:]))))
+        end
+        open("flows_in_state_$(i)_$(fname)_imag$(ext)", "w") do io
+            writedlm(io, vcat(reshape(header,1,:), hcat(ts,imag.(flows[i,:,:]))))
+        end
+
+        if derivative
+            open("derivative_flows_in_state_$(i)_$(fname)_real$(ext)", "w") do io
+                writedlm(io, vcat(reshape(header,1,:), hcat(ts,real.(ddt_flows[i,:,:]))))
+            end
+            open("derivative_flows_in_state_$(i)_$(fname)_imag$(ext)", "w") do io
+                writedlm(io, vcat(reshape(header,1,:), hcat(ts,imag.(ddt_flows[i,:,:]))))
+            end
+        end
+    end
+end
+
+@cast function state_to_state(system_input, simulate_input)
+    QDSimUtilities.print_banner()
+    units, sys, bath = ParseInput.parse_system_bath(system_input)
+    sys_file = TOML.parsefile(system_input)
+    is_QuAPI = get(sys_file["system"], "is_QuAPI", true)
+    if !is_QuAPI
+        sys.Hamiltonian .+= diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+    end
+    sim_file = TOML.parsefile(simulate_input)
+    for (ns, sim_node) in enumerate(sim_file["simulation"])
+        @info "Getting the state-to-state flows for simulation number $(ns). Please cite:"
+        QDSimUtilities.print_citation(Utilities.statetostate_references)
+        sim = ParseInput.parse_sim(sim_node, units)
+        @assert isfile(sim.output) "File not present."
+        calculate_print_statetostate(QDSimUtilities.Calculation(sim.calculation)(), sys, bath, sim, units, sim_node)
     end
 end
 
