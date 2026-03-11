@@ -214,7 +214,6 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
         L = nothing
     end
     derivative = get(sim_node,"derivative", false)
-    display(ts)
     display(sys.Hamiltonian / units.energy_unit)
     ddt_flows, flows = Utilities.statetostate(;t=(ts * units.time_unit), ρs=ρs, H0=sys.Hamiltonian, L=L)
 
@@ -234,10 +233,10 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
 
         if derivative
             open("derivative_flows_in_state_$(i)_$(fname)_real$(ext)", "w") do io
-                writedlm(io, vcat(reshape(header,1,:), hcat(ts,real.(ddt_flows[i,:,:]))))
+                writedlm(io, vcat(reshape(header,1,:), hcat(ts,real.(ddt_flows[i,:,:] * units.time_unit))))
             end
             open("derivative_flows_in_state_$(i)_$(fname)_imag$(ext)", "w") do io
-                writedlm(io, vcat(reshape(header,1,:), hcat(ts,imag.(ddt_flows[i,:,:]))))
+                writedlm(io, vcat(reshape(header,1,:), hcat(ts,imag.(ddt_flows[i,:,:] * units.time_unit))))
             end
         end
     end
