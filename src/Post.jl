@@ -215,7 +215,7 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
     end
     derivative = get(sim_node,"derivative", false)
     display(ts)
-    display(sys.Hamiltonian)
+    display(sys.Hamiltonian / units.energy_unit)
     ddt_flows, flows = Utilities.statetostate(;t=(ts * units.time_unit), ρs=ρs, H0=sys.Hamiltonian, L=L)
 
     for i in axes(flows,1)
