@@ -214,7 +214,9 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
         L = nothing
     end
     derivative = get(sim_node,"derivative", false)
-    ddt_flows, flows = Utilities.statetostate(;t=(ts * units.time_unit), ρs=ρs, H0=(sys.Hamiltonian * units.energy_unit), L=L)
+    display(ts)
+    display(sys.Hamiltonian)
+    ddt_flows, flows = Utilities.statetostate(;t=(ts * units.time_unit), ρs=ρs, H0=sys.Hamiltonian, L=L)
 
     for i in axes(flows,1)
         header = []
@@ -244,11 +246,11 @@ end
 @cast function state_to_state(system_input, simulate_input)
     QDSimUtilities.print_banner()
     units, sys, bath = ParseInput.parse_system_bath(system_input)
-    sys_file = TOML.parsefile(system_input)
-    is_QuAPI = get(sys_file["system"], "is_QuAPI", true)
-    if !is_QuAPI
-        sys.Hamiltonian .+= diagm(sum([SpectralDensities.reorganization_energy(j) / units.energy_unit * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
-    end
+    # sys_file = TOML.parsefile(system_input)
+    # is_QuAPI = get(sys_file["system"], "is_QuAPI", true)
+    # if !is_QuAPI
+    #     sys.Hamiltonian .+= diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+    # end
     sim_file = TOML.parsefile(simulate_input)
     for (ns, sim_node) in enumerate(sim_file["simulation"])
         @info "Getting the state-to-state flows for simulation number $(ns). Please cite:"
