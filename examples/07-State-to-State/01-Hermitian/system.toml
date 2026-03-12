@@ -1,0 +1,16 @@
+[units]
+energy_unit_name = "cm^-1"
+time_unit_name = "fs"
+
+[system]
+Hamiltonian = "Hamiltonian"
+is_QuAPI = true
+
+[baths]
+temperature = 300
+baths_type = "site_based"
+[[baths.bath]]
+type = "drude_lorentz"
+lambda = 35.0
+gamma = 106.177
+Ds = 1.0
