@@ -245,11 +245,6 @@ end
 @cast function state_to_state(system_input, simulate_input)
     QDSimUtilities.print_banner()
     units, sys, bath = ParseInput.parse_system_bath(system_input)
-    # sys_file = TOML.parsefile(system_input)
-    # is_QuAPI = get(sys_file["system"], "is_QuAPI", true)
-    # if !is_QuAPI
-    #     sys.Hamiltonian .+= diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
-    # end
     sim_file = TOML.parsefile(simulate_input)
     for (ns, sim_node) in enumerate(sim_file["simulation"])
         @info "Getting the state-to-state flows for simulation number $(ns). Please cite:"
