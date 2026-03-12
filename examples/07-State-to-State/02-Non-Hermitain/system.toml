@@ -1,0 +1,23 @@
+[units]
+energy_unit_name = "cm^-1"
+time_unit_name = "fs"
+
+[system]
+type = "complex"
+Hamiltonian = "Hamiltonian_leaky_monomer_2_600fs"
+is_QuAPI = false
+
+[baths]
+temperature = 300.0
+[[baths.bath]]
+type = "ohmic"
+xi = 0.121
+omegac = 900.065
+svec = [1.0, 0.0]
+Ds = 1.0
+[[baths.bath]]
+type = "ohmic"
+xi = 0.121
+omegac = 900.065
+svec = [0.0, 1.0]
+Ds = 1.0

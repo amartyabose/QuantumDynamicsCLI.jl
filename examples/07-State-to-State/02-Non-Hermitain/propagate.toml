@@ -1,0 +1,16 @@
+[propagate]
+[[propagate.simulation]]
+name = "dimer_NH"
+method = "TEMPO-TTM"
+output = "leaky_monomer2_600fs_dt4_r50_b350_c9.hdf5"
+
+dt = 4.0
+nsteps = 250
+rmax = 50
+
+maxdim = 350
+cutoff = 1e-9
+algorithm = "fit"
+
+rho0 = ["P_1"]
+outgroup = ["P_1"]

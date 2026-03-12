@@ -1,0 +1,20 @@
+[[simulation]]
+name = "dimer_fullspace"
+method = "TEMPO-TTM"
+output = "pump_300fs_drain_300fs_dt4_r20_b350_c12.hdf5"
+
+dt = 4.0
+nsteps = 5000
+rmax = 20
+
+maxdim = 350
+cutoff = 1e-12
+algorithm = "fit"
+
+lindblad = ["lindblad_pump","lindblad_drain"]
+decay_constant = [300.0, 300.0] #fs
+
+derivative = false
+
+outgroup = "P_1"
+observable_output = "dt4_r20_b350_c12_pump_300fs_drain_300fs.txt"
