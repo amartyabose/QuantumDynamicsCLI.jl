@@ -12,11 +12,11 @@ Lindblad jump operators can be used to describe excitation pumps and drains in e
     qdsim post state-to-state system.toml observables.toml
     ```
 
-The Linblad jump operators are specified using the label `lindblad` with the corresponding timescale decribed by `decay_constant` in the TOML files. It is important to note that the valid Lindblad jump operators are restricted to form:
+The Linblad jump operators are specified using the label `lindblad` with the corresponding timescale decribed by `decay_constant` in the TOML files. It is important to note that the valid Lindblad jump operators are restricted to the form:
 
 $$
-L = \sum_n c_n |f_n\rangle\langle i_n|,
-\;
+L = \sum_n c_n |f_n\rangle\langle i_n|\,,
+\qquad
 n \neq m \Rightarrow |f_n\rangle \neq |f_m\rangle
 $$
 
