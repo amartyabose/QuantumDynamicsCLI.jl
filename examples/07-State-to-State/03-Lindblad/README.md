@@ -13,8 +13,11 @@ Lindblad jump operators can be used to describe excitation pumps and drains in e
     ```
 
 The Linblad jump operators are specified using the label `lindblad` with the corresponding timescale decribed by `decay_constant` in the TOML files. It is important to note that the valid Lindblad jump operators are restricted to form:
-    $$
-    L = \sum_n c_n |f_n \rangle \langle i_n|\,\,\,:\,\,\,n\neq m \implies |f_n \rangle \neq |f_m \rangle
-    $$
+
+$$
+L = \sum_n c_n |f_n\rangle\langle i_n|,
+\;
+n \neq m \Rightarrow |f_n\rangle \neq |f_m\rangle
+$$
 
 Also, note that the Hamiltonian here describes the full Hilbert space of the dimer.
