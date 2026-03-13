@@ -257,6 +257,30 @@ function dynamics(::QDSimUtilities.Method"adaptive-kinks-QuAPI", units::QDSimUti
     data
 end
 
+function dynamics(::QDSimUtilities.Method"BRME", units::QDSimUtilities.Units, sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group}, sim_node; dry=false)
+    if !dry
+        @info "Running a Bloch-Redfield Master Equation calculation. Please cite:"
+    end
+
+    data = dt_group
+    outgroup = sim_node["outgroup"]
+
+    if !dry
+        outgrouphdf5 = Utilities.create_and_select_group(data, outgroup)
+        Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
+        Utilities.check_or_insert_value(data, "time_unit", units.time_unit)
+        Utilities.check_or_insert_value(data, "time", 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect)
+        Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+        Utilities.check_or_insert_value(outgrouphdf5, "time", 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect)
+        flush(data)
+        ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+        Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+        _, ρs = BlochRedfield.propagate(; Hamiltonian=sys.Hamiltonian, Jw=bath.Jw, β=bath.β, ρ0, dt=sim.dt, ntimes=sim.nsteps, sys_ops=[diagm(bath.svecs[j, :] .+ 0.0im) for j in axes(bath.svecs, 1)])
+        Utilities.check_or_insert_value(outgrouphdf5, "rho", ρs)
+    end
+    data
+end
+
 function dynamics(::QDSimUtilities.Method"TEMPO", units::QDSimUtilities.Units, sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group}, sim_node; dry=false)
     if !dry
         @info "Running a TEMPO dynamics calculation. Please cite:"

@@ -27,50 +27,191 @@ observable = "purity"
 [[simulation.observable]]
 observable = "vonNeumann_entropy"
 
+# [[simulation]]
+# name = "dimer"
+# method = "EACP"
+# output = "output_EACP.hdf5"
+# 
+# nsteps = 100
+# dt = 2
+# 
+# num_bins = 10
+# num_mc = 1000
+# reference_choice = "max_prob"
+# 
+# rho0 = "P_1"
+# outgroup = "init_1"
+# 
+# observable_output = "max_prob_out.dat"
+# 
+# [[simulation.observable]]
+# observable = "P_1"
+# [[simulation.observable]]
+# observable = "P_2"
+# [[simulation.observable]]
+# observable = "trace"
+# [[simulation.observable]]
+# observable = "purity"
+# [[simulation.observable]]
+# observable = "vonNeumann_entropy"
+# 
+# [[simulation]]
+# name = "dimer"
+# method = "EACP"
+# output = "output_EACP.hdf5"
+# 
+# nsteps = 100
+# dt = 2
+# 
+# num_bins = 10
+# num_mc = 1000
+# reference_choice = "dcsh"
+# 
+# rho0 = "P_1"
+# outgroup = "init_1"
+# 
+# observable_output = "dcsh_out.dat"
+# 
+# [[simulation.observable]]
+# observable = "P_1"
+# [[simulation.observable]]
+# observable = "P_2"
+# [[simulation.observable]]
+# observable = "trace"
+# [[simulation.observable]]
+# observable = "purity"
+# [[simulation.observable]]
+# observable = "vonNeumann_entropy"
+# 
+# [[simulation]]
+# name = "dimer"
+# method = "EACP"
+# output = "output_EACP.hdf5"
+# 
+# nsteps = 100
+# dt = 2
+# 
+# num_bins = 10
+# num_mc = 1000
+# reference_choice = "ehrenfest"
+# 
+# rho0 = "P_1"
+# outgroup = "init_1"
+# 
+# observable_output = "ehrenfest_out.dat"
+# 
+# [[simulation.observable]]
+# observable = "P_1"
+# [[simulation.observable]]
+# observable = "P_2"
+# [[simulation.observable]]
+# observable = "trace"
+# [[simulation.observable]]
+# observable = "purity"
+# [[simulation.observable]]
+# observable = "vonNeumann_entropy"
+# 
+# [[simulation]]
+# name = "dimer"
+# method = "EACP"
+# output = "output_EACP.hdf5"
+# 
+# nsteps = 100
+# dt = 2
+# 
+# num_bins = 10
+# num_mc = 1000
+# reference_choice = "fixed"
+# 
+# rho0 = "P_1"
+# outgroup = "init_1"
+# 
+# observable_output = "fixed_out.dat"
+# 
+# [[simulation.observable]]
+# observable = "P_1"
+# [[simulation.observable]]
+# observable = "P_2"
+# [[simulation.observable]]
+# observable = "trace"
+# [[simulation.observable]]
+# observable = "purity"
+# [[simulation.observable]]
+# observable = "vonNeumann_entropy"
+# 
+# [[simulation]]
+# name = "dimer"
+# method = "Spin-LSC"
+# output = "output_mmspin.hdf5"
+# 
+# nsteps = 100
+# dt = 2
+# 
+# num_bins = 10
+# num_mc = 1000
+# 
+# rho0 = "P_1"
+# outgroup = "init_1"
+# 
+# observable_output = "spinLSC_out.dat"
+# 
+# [[simulation.observable]]
+# observable = "P_1"
+# [[simulation.observable]]
+# observable = "P_2"
+# [[simulation.observable]]
+# observable = "trace"
+# [[simulation.observable]]
+# observable = "purity"
+# [[simulation.observable]]
+# observable = "vonNeumann_entropy"
+# 
+# [[simulation]]
+# name = "dimer"
+# method = "QCPI"
+# output = "output_QCPI.hdf5"
+# 
+# nsteps = 40
+# dt = 5
+# kmax = 1
+# 
+# num_bins = 10
+# num_mc = 10000
+# reference_choice = "dcsh"
+# 
+# rho0 = "P_1"
+# outgroup = "init_1"
+# 
+# observable_output = "dt5_kmax1_out.dat"
+# 
+# [[simulation.observable]]
+# observable = "P_1"
+# [[simulation.observable]]
+# observable = "P_2"
+# [[simulation.observable]]
+# observable = "trace"
+# [[simulation.observable]]
+# observable = "purity"
+# [[simulation.observable]]
+# observable = "vonNeumann_entropy"
+
 [[simulation]]
 name = "dimer"
-method = "EACP"
-output = "output_EACP.hdf5"
+method = "QCPI"
+output = "output_QCPI.hdf5"
 
-nsteps = 100
-dt = 2
-
-num_bins = 10
-num_mc = 1000
-reference_choice = "max_prob"
-
-rho0 = "P_1"
-outgroup = "init_1"
-
-observable_output = "max_prob_out.dat"
-
-[[simulation.observable]]
-observable = "P_1"
-[[simulation.observable]]
-observable = "P_2"
-[[simulation.observable]]
-observable = "trace"
-[[simulation.observable]]
-observable = "purity"
-[[simulation.observable]]
-observable = "vonNeumann_entropy"
-
-[[simulation]]
-name = "dimer"
-method = "EACP"
-output = "output_EACP.hdf5"
-
-nsteps = 100
-dt = 2
+nsteps = 40
+dt = 5
+kmax = 3
 
 num_bins = 10
-num_mc = 1000
+num_mc = 10000
 reference_choice = "dcsh"
 
 rho0 = "P_1"
 outgroup = "init_1"
 
-observable_output = "dcsh_out.dat"
+observable_output = "dt5_kmax3_out.dat"
 
 [[simulation.observable]]
 observable = "P_1"
@@ -85,20 +226,21 @@ observable = "vonNeumann_entropy"
 
 [[simulation]]
 name = "dimer"
-method = "EACP"
-output = "output_EACP.hdf5"
+method = "QCPI"
+output = "output_QCPI.hdf5"
 
-nsteps = 100
-dt = 2
+nsteps = 40
+dt = 5
+kmax = 2
 
 num_bins = 10
-num_mc = 1000
-reference_choice = "ehrenfest"
+num_mc = 10000
+reference_choice = "dcsh"
 
 rho0 = "P_1"
 outgroup = "init_1"
 
-observable_output = "ehrenfest_out.dat"
+observable_output = "dt5_kmax2_out.dat"
 
 [[simulation.observable]]
 observable = "P_1"
@@ -113,20 +255,21 @@ observable = "vonNeumann_entropy"
 
 [[simulation]]
 name = "dimer"
-method = "EACP"
-output = "output_EACP.hdf5"
+method = "QCPI"
+output = "output_QCPI.hdf5"
 
-nsteps = 100
-dt = 2
+nsteps = 80
+dt = 2.5
+kmax = 2
 
 num_bins = 10
-num_mc = 1000
-reference_choice = "fixed"
+num_mc = 10000
+reference_choice = "dcsh"
 
 rho0 = "P_1"
 outgroup = "init_1"
 
-observable_output = "fixed_out.dat"
+observable_output = "dt2_5_kmax2_out.dat"
 
 [[simulation.observable]]
 observable = "P_1"
@@ -141,19 +284,108 @@ observable = "vonNeumann_entropy"
 
 [[simulation]]
 name = "dimer"
-method = "Spin-LSC"
-output = "output_mmspin.hdf5"
+method = "QCPI"
+output = "output_QCPI.hdf5"
 
-nsteps = 100
-dt = 2
+nsteps = 80
+dt = 2.5
+kmax = 3
 
 num_bins = 10
-num_mc = 1000
+num_mc = 10000
+reference_choice = "dcsh"
 
 rho0 = "P_1"
 outgroup = "init_1"
 
-observable_output = "spinLSC_out.dat"
+observable_output = "dt2_5_kmax3_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "QCPI"
+output = "output_QCPI.hdf5"
+
+nsteps = 80
+dt = 2.5
+kmax = 4
+
+num_bins = 10
+num_mc = 10000
+reference_choice = "dcsh"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "dt2_5_kmax4_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "QCPI"
+output = "output_QCPI_dt2_5.hdf5"
+
+nsteps = 15
+dt = 2.5
+kmax = 5
+
+num_bins = 10
+num_mc = 4000
+reference_choice = "dcsh"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "dt2_5_kmax5_out.dat"
+
+[[simulation.observable]]
+observable = "P_1"
+[[simulation.observable]]
+observable = "P_2"
+[[simulation.observable]]
+observable = "trace"
+[[simulation.observable]]
+observable = "purity"
+[[simulation.observable]]
+observable = "vonNeumann_entropy"
+
+[[simulation]]
+name = "dimer"
+method = "QCPI"
+output = "output_QCPI_dt4.hdf5"
+
+nsteps = 9
+dt = 4
+kmax = 5
+
+num_bins = 10
+num_mc = 10000
+reference_choice = "dcsh"
+
+rho0 = "P_1"
+outgroup = "init_1"
+
+observable_output = "dt4_kmax5_out.dat"
 
 [[simulation.observable]]
 observable = "P_1"

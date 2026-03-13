@@ -1,11 +1,11 @@
 [simulation]
 name = "dimer"
 method = "QCPI"
-output = "output_QCPI.hdf5"
+output = "output_QCPI_dt4.hdf5"
 
 nsteps = 50
 dt = 4
-kmax = 3
+kmax = 4
 
 num_bins = 10
 num_mc = 10000
