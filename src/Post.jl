@@ -246,12 +246,12 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
                 write(rio, "# (1)t")
                 write(iio, "# (1)t")
                 for j in axes(flows,1)
-                    write(rio, "\t($(j+1))#$j")
-                    write(iio, "\t($(j+1))#$j")
+                    write(rio, "\t# ($(j+1)) P[$i<--$j](t)")
+                    write(iio, "\t# ($(j+1)) P[$i<--$j](t)")
                 end
                 nbins > 1 && for j in axes(flows,1)
-                    write(rio, "\t($(j+1+sysdim))#$j std")
-                    write(iio, "\t($(j+1+sysdim))#$j std")
+                    write(rio, "\t# ($(j+1+sysdim)) P[$i<--$j](t) std")
+                    write(iio, "\t# ($(j+1+sysdim)) P[$i<--$j](t) std")
                 end
                 write(rio, "\n")
                 write(iio, "\n")
@@ -277,12 +277,12 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
                 write(rio, "# (1)t")
                 write(iio, "# (1)t")
                 for j in axes(flows,1)
-                    write(rio, "\t($(j+1))#$j")
-                    write(iio, "\t($(j+1))#$j")
+                    write(rio, "\t# ($(j+1)) P[$i<--$j](t)")
+                    write(iio, "\t# ($(j+1)) P[$i<--$j](t)")
                 end
                 nbins > 1 && for j in axes(flows,1)
-                    write(rio, "\t($(j+1+sysdim))#$j std")
-                    write(iio, "\t($(j+1+sysdim))#$j std")
+                    write(rio, "\t# ($(j+1+sysdim)) P[$i<--$j](t) std")
+                    write(iio, "\t# ($(j+1+sysdim)) P[$i<--$j](t) std")
                 end
                 write(rio, "\n")
                 write(iio, "\n")
