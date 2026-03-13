@@ -104,8 +104,8 @@ function calculate_print_observable(::QDSimUtilities.Calculation"dynamics", sys:
             if nbins > 1
                 vals[:, os] .= mean(real.(values); dims=2)[:,1] .+
                          im .* mean(imag.(values); dims=2)[:,1]
-                vals_std[:, os] .= (stdm(real.(values), real(vals[:, os]); dims=2)[:,1] .+
-                              im .* stdm(imag.(values), imag(vals[:, os]); dims=2)[:,1]) / sqrt(nbins)
+                vals_std[:, os] .= (stdm(real.(values), real(vals[:, os]); dims=2)[:,1]  .+
+                              im .* stdm(imag.(values), imag(vals[:, os]); dims=2)[:,1]) ./ sqrt(nbins)
             else
                 vals[:, os] .= values[:,1]
             end
@@ -200,13 +200,21 @@ end
 function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, units::QDSimUtilities.Units, sim_node)
     out = h5open(sim.output, "r")
     method_group = out["$(sim.name)/$(sim.calculation)/$(sim.method)"]
-    data_node = Simulate.calc(QDSimUtilities.Calculation(sim.calculation)(), sys, bath, sim, units, sim_node, method_group; dry=true)
     outputdir = sim_node["outgroup"]
     obs_file = sim_node["observable_output"]
     fname, ext = splitext(obs_file)
 
-    ts = read(data_node[outputdir]["time"])
-    ρs = read(data_node[outputdir]["rho"])
+    root_node = Simulate.calc(QDSimUtilities.Calculation(sim.calculation)(), sys, bath, sim, units, sim_node, method_group; dry=true)
+    if !haskey(root_node, outputdir)
+        nbins = read_dataset(root_node, "num_bins")
+        ρs = [ read(root_node["bin #$b"][outputdir]["rho"]) for b in 1:nbins ]
+        ts = read(root_node["bin #1"][outputdir]["time"])
+    else
+        nbins = 1
+        ρs = [ read(root_node[outputdir]["rho"]) ]
+        ts = read(root_node[outputdir]["time"])
+    end
+
     if haskey(sim_node, "lindblad")
         decayconstant = [sim_node["decay_constant"][i] for i in 1:length(sim_node["decay_constant"])]
         L = [ParseInput.parse_operator(sim_node["lindblad"][i], sys.Hamiltonian) / sqrt(decayconstant[i] * units.time_unit) for i in 1:length(sim_node["decay_constant"])]
@@ -215,28 +223,82 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
     end
     derivative = get(sim_node,"derivative", false)
 
-    ddt_flows, flows = Utilities.statetostate(;t=(ts * units.time_unit), ρs=ρs, H0=sys.Hamiltonian, L=L)
+    sysdim = size(sys.Hamiltonian, 1)
+    ddt_flows = zeros(eltype(ρs[1]), sysdim,size(ρs[1], 1),sysdim,nbins)
+    flows = zero(ddt_flows)
+
+    for b in 1:nbins
+        ddt_flows[:,:,:,b], flows[:,:,:,b] = Utilities.statetostate(; t=(ts * units.time_unit), ρs=ρs[b], H0=sys.Hamiltonian, L=L)
+    end
 
     for i in axes(flows,1)
-        header = []
-        push!(header,"#t")
-        for j in axes(flows,1)
-            push!(header,"#$(j)")
-        end
+        mean_ddt_flow = mean(real.(ddt_flows[i,:,:,:]); dims=3)[:,:,1] .+
+                  im .* mean(imag.(ddt_flows[i,:,:,:]); dims=3)[:,:,1]
+        mean_flow = mean(real.(flows[i,:,:,:]); dims=3)[:,:,1] .+
+              im .* mean(imag.(flows[i,:,:,:]); dims=3)[:,:,1]
+        std_ddt_flow = (stdm(real.(ddt_flows[i,:,:,:]), real(mean_ddt_flow); dims=3)[:,:,1]  .+
+                  im .* stdm(real.(ddt_flows[i,:,:,:]), real(mean_ddt_flow); dims=3)[:,:,1]) ./ sqrt(nbins)
+        std_flow = (stdm(real.(flows[i,:,:,:]), real(mean_flow); dims=3)[:,:,1]  .+
+              im .* stdm(real.(flows[i,:,:,:]), real(mean_flow); dims=3)[:,:,1]) ./ sqrt(nbins)
 
-        open("flows_in_state_$(i)_$(fname)_real$(ext)", "w") do io
-            writedlm(io, vcat(reshape(header,1,:), hcat(ts,real.(flows[i,:,:]))))
-        end
-        open("flows_in_state_$(i)_$(fname)_imag$(ext)", "w") do io
-            writedlm(io, vcat(reshape(header,1,:), hcat(ts,imag.(flows[i,:,:]))))
-        end
-
-        if derivative
-            open("derivative_flows_in_state_$(i)_$(fname)_real$(ext)", "w") do io
-                writedlm(io, vcat(reshape(header,1,:), hcat(ts,real.(ddt_flows[i,:,:] * units.time_unit))))
+        open("flows_in_state_$(i)_$(fname)_real$(ext)", "w") do rio
+            open("flows_in_state_$(i)_$(fname)_imag$(ext)", "w") do iio
+                write(rio, "# (1)t")
+                write(iio, "# (1)t")
+                for j in axes(flows,1)
+                    write(rio, "\t($(j+1))#$j")
+                    write(iio, "\t($(j+1))#$j")
+                end
+                nbins > 1 && for j in axes(flows,1)
+                    write(rio, "\t($(j+1+sysdim))#$j std")
+                    write(iio, "\t($(j+1+sysdim))#$j std")
+                end
+                write(rio, "\n")
+                write(iio, "\n")
+                if nbins > 1
+                    writedlm(rio, hcat(round.(ts; sigdigits=10),
+                                       round.(real.(mean_flow); sigdigits=10),
+                                       round.(real.(std_flow); sigdigits=10)))
+                    writedlm(iio, hcat(round.(ts; sigdigits=10),
+                                       round.(imag.(mean_flow); sigdigits=10),
+                                       round.(imag.(std_flow); sigdigits=10)))
+                else
+                    writedlm(rio, hcat(round.(ts; sigdigits=10),
+                                       round.(real.(mean_flow); sigdigits=10)))
+                    writedlm(iio, hcat(round.(ts; sigdigits=10),
+                                       round.(imag.(mean_flow); sigdigits=10)))
+                end
             end
-            open("derivative_flows_in_state_$(i)_$(fname)_imag$(ext)", "w") do io
-                writedlm(io, vcat(reshape(header,1,:), hcat(ts,imag.(ddt_flows[i,:,:] * units.time_unit))))
+        end
+
+        derivative || continue
+        open("derivative_flows_in_state_$(i)_$(fname)_real$(ext)", "w") do rio
+            open("derivative_flows_in_state_$(i)_$(fname)_imag$(ext)", "w") do iio
+                write(rio, "# (1)t")
+                write(iio, "# (1)t")
+                for j in axes(flows,1)
+                    write(rio, "\t($(j+1))#$j")
+                    write(iio, "\t($(j+1))#$j")
+                end
+                nbins > 1 && for j in axes(flows,1)
+                    write(rio, "\t($(j+1+sysdim))#$j std")
+                    write(iio, "\t($(j+1+sysdim))#$j std")
+                end
+                write(rio, "\n")
+                write(iio, "\n")
+                if nbins > 1
+                    writedlm(rio, hcat(round.(ts; sigdigits=10),
+                                       round.(real.(mean_ddt_flow); sigdigits=10),
+                                       round.(real.(std_ddt_flow); sigdigits=10)))
+                    writedlm(iio, hcat(round.(ts; sigdigits=10),
+                                       round.(imag.(mean_ddt_flow); sigdigits=10),
+                                       round.(imag.(std_ddt_flow); sigdigits=10)))
+                else
+                    writedlm(rio, hcat(round.(ts; sigdigits=10),
+                                       round.(real.(mean_ddt_flow); sigdigits=10)))
+                    writedlm(iio, hcat(round.(ts; sigdigits=10),
+                                       round.(imag.(mean_ddt_flow); sigdigits=10)))
+                end
             end
         end
     end
