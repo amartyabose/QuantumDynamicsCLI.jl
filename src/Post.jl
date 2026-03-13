@@ -288,16 +288,16 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
                 write(iio, "\n")
                 if nbins > 1
                     writedlm(rio, hcat(round.(ts; sigdigits=10),
-                                       round.(real.(mean_ddt_flow); sigdigits=10),
-                                       round.(real.(std_ddt_flow); sigdigits=10)))
+                                       round.(real.(mean_ddt_flow * units.time_unit); sigdigits=10),
+                                       round.(real.(std_ddt_flow) * units.time_unit; sigdigits=10)))
                     writedlm(iio, hcat(round.(ts; sigdigits=10),
-                                       round.(imag.(mean_ddt_flow); sigdigits=10),
-                                       round.(imag.(std_ddt_flow); sigdigits=10)))
+                                       round.(imag.(mean_ddt_flow * units.time_unit); sigdigits=10),
+                                       round.(imag.(std_ddt_flow * units.time_unit); sigdigits=10)))
                 else
                     writedlm(rio, hcat(round.(ts; sigdigits=10),
-                                       round.(real.(mean_ddt_flow); sigdigits=10)))
+                                       round.(real.(mean_ddt_flow * units.time_unit); sigdigits=10)))
                     writedlm(iio, hcat(round.(ts; sigdigits=10),
-                                       round.(imag.(mean_ddt_flow); sigdigits=10)))
+                                       round.(imag.(mean_ddt_flow * units.time_unit); sigdigits=10)))
                 end
             end
         end
