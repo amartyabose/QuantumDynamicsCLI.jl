@@ -246,12 +246,12 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
                 write(rio, "# (1)t")
                 write(iio, "# (1)t")
                 for j in axes(flows,1)
-                    write(rio, "\t($(j+1))#$j")
-                    write(iio, "\t($(j+1))#$j")
+                    write(rio, "\t# ($(j+1)) P[$i<--$j](t)")
+                    write(iio, "\t# ($(j+1)) P[$i<--$j](t)")
                 end
                 nbins > 1 && for j in axes(flows,1)
-                    write(rio, "\t($(j+1+sysdim))#$j std")
-                    write(iio, "\t($(j+1+sysdim))#$j std")
+                    write(rio, "\t# ($(j+1+sysdim)) P[$i<--$j](t) std")
+                    write(iio, "\t# ($(j+1+sysdim)) P[$i<--$j](t) std")
                 end
                 write(rio, "\n")
                 write(iio, "\n")
@@ -277,27 +277,27 @@ function calculate_print_statetostate(::QDSimUtilities.Calculation"dynamics", sy
                 write(rio, "# (1)t")
                 write(iio, "# (1)t")
                 for j in axes(flows,1)
-                    write(rio, "\t($(j+1))#$j")
-                    write(iio, "\t($(j+1))#$j")
+                    write(rio, "\t# ($(j+1)) d/dt P[$i<--$j](t)")
+                    write(iio, "\t# ($(j+1)) d/dt P[$i<--$j](t)")
                 end
                 nbins > 1 && for j in axes(flows,1)
-                    write(rio, "\t($(j+1+sysdim))#$j std")
-                    write(iio, "\t($(j+1+sysdim))#$j std")
+                    write(rio, "\t# ($(j+1+sysdim)) d/dt P[$i<--$j](t) std")
+                    write(iio, "\t# ($(j+1+sysdim)) d/dt P[$i<--$j](t) std")
                 end
                 write(rio, "\n")
                 write(iio, "\n")
                 if nbins > 1
                     writedlm(rio, hcat(round.(ts; sigdigits=10),
-                                       round.(real.(mean_ddt_flow); sigdigits=10),
-                                       round.(real.(std_ddt_flow); sigdigits=10)))
+                                       round.(real.(mean_ddt_flow * units.time_unit); sigdigits=10),
+                                       round.(real.(std_ddt_flow) * units.time_unit; sigdigits=10)))
                     writedlm(iio, hcat(round.(ts; sigdigits=10),
-                                       round.(imag.(mean_ddt_flow); sigdigits=10),
-                                       round.(imag.(std_ddt_flow); sigdigits=10)))
+                                       round.(imag.(mean_ddt_flow * units.time_unit); sigdigits=10),
+                                       round.(imag.(std_ddt_flow * units.time_unit); sigdigits=10)))
                 else
                     writedlm(rio, hcat(round.(ts; sigdigits=10),
-                                       round.(real.(mean_ddt_flow); sigdigits=10)))
+                                       round.(real.(mean_ddt_flow * units.time_unit); sigdigits=10)))
                     writedlm(iio, hcat(round.(ts; sigdigits=10),
-                                       round.(imag.(mean_ddt_flow); sigdigits=10)))
+                                       round.(imag.(mean_ddt_flow * units.time_unit); sigdigits=10)))
                 end
             end
         end
