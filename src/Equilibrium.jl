@@ -93,8 +93,7 @@ function rho(::QDSimUtilities.Method"QuAPI", units::QDSimUtilities.Units, sys::Q
         @info "Running with $(Threads.nthreads()) threads."
     end
 
-    cutoff_group = Utilities.create_and_select_group(dat_group, "cutoff=$(cutoff)")
-    data = Utilities.create_and_select_group(cutoff_group, "algorithm=$(algorithm)")
+    data = Utilities.create_and_select_group(dat_group, "cutoff=$(cutoff)")
     if !dry
         flush(data)
         extraargs = QuAPI.QuAPIArgs(; cutoff)
