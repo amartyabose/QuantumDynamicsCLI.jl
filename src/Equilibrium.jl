@@ -45,6 +45,7 @@ function complex_time_correlation_function(::QDSimUtilities.Method"TNPI", units:
 
     type_corr = get(sim_node, "corr_type", "symm")
 
+    dat_group = Utilities.create_and_select_group(dat_group, "$(type_corr)")
     maxdim_group = Utilities.create_and_select_group(dat_group, "maxdim=$(maxdim)")
     cutoff_group = Utilities.create_and_select_group(maxdim_group, "cutoff=$(cutoff)")
     data = Utilities.create_and_select_group(cutoff_group, "algorithm=$(algorithm)")
@@ -122,6 +123,7 @@ function complex_time_correlation_function(::QDSimUtilities.Method"QuAPI", units
 
     type_corr = get(sim_node, "corr_type", "symm")
 
+    dat_group = Utilities.create_and_select_group(dat_group, "$(type_corr)")
     data = Utilities.create_and_select_group(dat_group, "cutoff=$(cutoff)")
     if !dry
         Utilities.check_or_insert_value(data, "dt", sim.dt / units.time_unit)
@@ -170,6 +172,7 @@ function complex_time_correlation_function(::QDSimUtilities.Method"adaptive-kink
 
     type_corr = get(sim_node, "corr_type", "symm")
 
+    dat_group = Utilities.create_and_select_group(dat_group, "$(type_corr)")
     cutoff_group = Utilities.create_and_select_group(dat_group, "cutoff=$(cutoff)")
     prop_cutoff = get(sim_node, "propagator_cutoff", 0.0)
     data = Utilities.create_and_select_group(cutoff_group, "prop_cutoff=$(prop_cutoff)")
