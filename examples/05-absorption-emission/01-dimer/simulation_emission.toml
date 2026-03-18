@@ -1,0 +1,17 @@
+[simulation]
+name = "emission"
+calculation = "complex_corr"
+method = "adaptive-kinks-QuAPI"
+output = "output.hdf5"
+corr_type = "asymm"
+nsteps = 10
+dt = 4.0
+tfinal = 500.0
+fourier_transform = true
+conjugate = true
+A = "mum"
+B = "mup"
+partition_function = "Pexc"
+cutoff = 1e-10
+propagator_cutoff = 1e-10
+
