@@ -1,0 +1,71 @@
+[34mWelcome to the QDSim program built on top of the QuantumDynamics.jl library:[39m
+[31m- Bose, A. QuantumDynamics.jl: A Modular Approach to Simulations of Dynamics of Open Quantum Systems. The Journal of Chemical Physics 2023, 158 (20), 204113. https://doi.org/10.1063/5.0151483.[39m
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mUsing LBTConfig([ILP64] libmkl_rt.so, [LP64] libmkl_rt.so) for linear algebra.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mRunning a complex time QuAPI simulation. Please cite:
+[31m- Topaler, M.; Makri, N. Quantum rates for a double well coupled to a dissipative bath: Accurate path integral results and comparison with approximate theories. The Journal of Chemical Physics 1994, 101 (9), 7500-7519.[39m
+[31m- Bose, A. Quantum correlation functions through tensor network path integral. The Journal of Chemical Physics 2023, 159 (21), 214110.[39m
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mRunning with 112 threads.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mCalculating the partition function for normalization.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mPartition function = 2.1081569242597955.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mSaving the equilibrium density matrix.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 1; number of paths = 32, time = 2.058 sec; memory allocated = 483.586 GB; gc time = 0.516 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 2; number of paths = 512, time = 1.8 sec; memory allocated = 449.476 GB; gc time = 0.301 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 3; number of paths = 512, time = 1.764 sec; memory allocated = 449.476 GB; gc time = 0.278 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 4; number of paths = 512, time = 1.727 sec; memory allocated = 449.476 GB; gc time = 0.339 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 5; number of paths = 512, time = 1.59 sec; memory allocated = 449.477 GB; gc time = 0.18 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 6; number of paths = 512, time = 1.647 sec; memory allocated = 449.477 GB; gc time = 0.203 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 7; number of paths = 512, time = 2.061 sec; memory allocated = 449.477 GB; gc time = 0.606 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 8; number of paths = 512, time = 1.641 sec; memory allocated = 449.477 GB; gc time = 0.205 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 9; number of paths = 512, time = 1.716 sec; memory allocated = 449.477 GB; gc time = 0.27 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 10; number of paths = 512, time = 1.656 sec; memory allocated = 449.477 GB; gc time = 0.237 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 11; number of paths = 512, time = 1.621 sec; memory allocated = 449.477 GB; gc time = 0.201 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 12; number of paths = 512, time = 1.731 sec; memory allocated = 449.477 GB; gc time = 0.269 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 13; number of paths = 512, time = 1.73 sec; memory allocated = 449.477 GB; gc time = 0.262 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 14; number of paths = 512, time = 1.628 sec; memory allocated = 449.477 GB; gc time = 0.199 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 15; number of paths = 512, time = 1.822 sec; memory allocated = 449.477 GB; gc time = 0.377 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 16; number of paths = 512, time = 1.671 sec; memory allocated = 449.477 GB; gc time = 0.223 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 17; number of paths = 512, time = 1.483 sec; memory allocated = 449.477 GB; gc time = 0.197 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 18; number of paths = 512, time = 1.694 sec; memory allocated = 449.477 GB; gc time = 0.318 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 19; number of paths = 512, time = 1.637 sec; memory allocated = 449.477 GB; gc time = 0.207 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 20; number of paths = 512, time = 1.546 sec; memory allocated = 449.477 GB; gc time = 0.183 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 21; number of paths = 512, time = 1.841 sec; memory allocated = 449.477 GB; gc time = 0.351 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 22; number of paths = 512, time = 1.577 sec; memory allocated = 449.477 GB; gc time = 0.187 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 23; number of paths = 512, time = 1.628 sec; memory allocated = 449.477 GB; gc time = 0.27 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 24; number of paths = 512, time = 1.731 sec; memory allocated = 449.477 GB; gc time = 0.256 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 25; number of paths = 512, time = 1.57 sec; memory allocated = 449.477 GB; gc time = 0.179 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 26; number of paths = 442, time = 1.75 sec; memory allocated = 449.436 GB; gc time = 0.338 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 27; number of paths = 512, time = 1.539 sec; memory allocated = 449.477 GB; gc time = 0.179 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 28; number of paths = 512, time = 1.599 sec; memory allocated = 449.477 GB; gc time = 0.253 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 29; number of paths = 512, time = 1.56 sec; memory allocated = 449.477 GB; gc time = 0.247 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 30; number of paths = 512, time = 1.622 sec; memory allocated = 449.477 GB; gc time = 0.2 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 31; number of paths = 512, time = 1.525 sec; memory allocated = 449.477 GB; gc time = 0.28 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 32; number of paths = 512, time = 1.724 sec; memory allocated = 449.477 GB; gc time = 0.246 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 33; number of paths = 512, time = 1.588 sec; memory allocated = 449.477 GB; gc time = 0.193 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 34; number of paths = 512, time = 1.629 sec; memory allocated = 449.477 GB; gc time = 0.258 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 35; number of paths = 512, time = 1.568 sec; memory allocated = 449.477 GB; gc time = 0.246 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 36; number of paths = 512, time = 1.626 sec; memory allocated = 449.477 GB; gc time = 0.203 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 37; number of paths = 512, time = 1.639 sec; memory allocated = 449.477 GB; gc time = 0.304 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 38; number of paths = 512, time = 1.721 sec; memory allocated = 449.477 GB; gc time = 0.266 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 39; number of paths = 512, time = 1.564 sec; memory allocated = 449.477 GB; gc time = 0.184 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 40; number of paths = 512, time = 1.728 sec; memory allocated = 449.477 GB; gc time = 0.338 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 41; number of paths = 512, time = 1.576 sec; memory allocated = 449.477 GB; gc time = 0.174 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 42; number of paths = 512, time = 1.528 sec; memory allocated = 449.477 GB; gc time = 0.281 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 43; number of paths = 512, time = 1.669 sec; memory allocated = 449.477 GB; gc time = 0.261 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 44; number of paths = 512, time = 1.499 sec; memory allocated = 449.477 GB; gc time = 0.205 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 45; number of paths = 512, time = 1.607 sec; memory allocated = 449.477 GB; gc time = 0.21 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 46; number of paths = 512, time = 1.798 sec; memory allocated = 449.477 GB; gc time = 0.368 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 47; number of paths = 512, time = 1.636 sec; memory allocated = 449.477 GB; gc time = 0.189 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 48; number of paths = 512, time = 1.516 sec; memory allocated = 449.477 GB; gc time = 0.189 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 49; number of paths = 512, time = 1.76 sec; memory allocated = 449.477 GB; gc time = 0.342 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 50; number of paths = 512, time = 1.548 sec; memory allocated = 449.477 GB; gc time = 0.195 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 51; number of paths = 448, time = 1.609 sec; memory allocated = 449.439 GB; gc time = 0.197 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 52; number of paths = 512, time = 1.735 sec; memory allocated = 449.477 GB; gc time = 0.358 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 53; number of paths = 512, time = 1.65 sec; memory allocated = 449.477 GB; gc time = 0.198 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 54; number of paths = 512, time = 1.607 sec; memory allocated = 449.477 GB; gc time = 0.203 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 55; number of paths = 512, time = 1.729 sec; memory allocated = 449.477 GB; gc time = 0.341 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 56; number of paths = 512, time = 1.624 sec; memory allocated = 449.477 GB; gc time = 0.189 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 57; number of paths = 512, time = 1.599 sec; memory allocated = 449.477 GB; gc time = 0.19 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 58; number of paths = 512, time = 1.625 sec; memory allocated = 449.477 GB; gc time = 0.257 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 59; number of paths = 512, time = 1.733 sec; memory allocated = 449.477 GB; gc time = 0.273 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 60; number of paths = 512, time = 1.7 sec; memory allocated = 449.477 GB; gc time = 0.201 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 61; number of paths = 512, time = 1.636 sec; memory allocated = 449.477 GB; gc time = 0.251 sec

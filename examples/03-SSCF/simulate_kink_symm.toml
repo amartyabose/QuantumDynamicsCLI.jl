@@ -1,18 +1,15 @@
 [simulation]
 name = "test"
 calculation = "complex_corr"
-method = "TNPI"
+corr_type = "symm"
+method = "adaptive-kinks-QuAPI"
 output = "test.hdf5"
 
-nsteps = 50
+nsteps = 4
 dt = 0.25
 tfinal = 15.0
 
 A = "sigmaz"
 B = "sigmaz"
 partition_function = "id"
-correlation_function_output = "sigma_z.dat"
 fourier_transform = true
-
-maxdim = 1000
-cutoff = 1e-10

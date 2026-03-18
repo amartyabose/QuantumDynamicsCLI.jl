@@ -1,0 +1,71 @@
+[34mWelcome to the QDSim program built on top of the QuantumDynamics.jl library:[39m
+[31m- Bose, A. QuantumDynamics.jl: A Modular Approach to Simulations of Dynamics of Open Quantum Systems. The Journal of Chemical Physics 2023, 158 (20), 204113. https://doi.org/10.1063/5.0151483.[39m
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mUsing LBTConfig([ILP64] libmkl_rt.so, [LP64] libmkl_rt.so) for linear algebra.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mRunning a complex time TNPI simulation. Please cite:
+[31m- Topaler, M.; Makri, N. Quantum rates for a double well coupled to a dissipative bath: Accurate path integral results and comparison with approximate theories. The Journal of Chemical Physics 1994, 101 (9), 7500-7519.[39m
+[31m- Bose, A. Quantum correlation functions through tensor network path integral. The Journal of Chemical Physics 2023, 159 (21), 214110.[39m
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mRunning with 56 threads.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mCalculating the partition function for normalization.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mPartition function = 2.1081586050290104.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mSaving the equilibrium density matrix.
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 1; avg bond dimension = 3.25; time = 1.279 sec; memory allocated = 460.679 GB; gc time = 0.492 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 2; avg bond dimension = 3.25; time = 1.919 sec; memory allocated = 460.677 GB; gc time = 0.493 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 3; avg bond dimension = 3.25; time = 1.793 sec; memory allocated = 460.679 GB; gc time = 0.298 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 4; avg bond dimension = 3.25; time = 1.709 sec; memory allocated = 460.68 GB; gc time = 0.308 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 5; avg bond dimension = 3.25; time = 2.316 sec; memory allocated = 460.691 GB; gc time = 0.839 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 6; avg bond dimension = 3.25; time = 2.119 sec; memory allocated = 460.705 GB; gc time = 0.711 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 7; avg bond dimension = 3.25; time = 1.658 sec; memory allocated = 460.709 GB; gc time = 0.208 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 8; avg bond dimension = 3.25; time = 1.839 sec; memory allocated = 460.709 GB; gc time = 0.349 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 9; avg bond dimension = 3.5; time = 1.753 sec; memory allocated = 460.744 GB; gc time = 0.215 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 10; avg bond dimension = 3.5; time = 1.752 sec; memory allocated = 460.77 GB; gc time = 0.332 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 11; avg bond dimension = 3.5; time = 1.599 sec; memory allocated = 460.77 GB; gc time = 0.295 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 12; avg bond dimension = 3.25; time = 1.432 sec; memory allocated = 460.76 GB; gc time = 0.203 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 13; avg bond dimension = 3.25; time = 1.723 sec; memory allocated = 460.712 GB; gc time = 0.333 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 14; avg bond dimension = 3.25; time = 1.688 sec; memory allocated = 460.712 GB; gc time = 0.229 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 15; avg bond dimension = 3.25; time = 1.667 sec; memory allocated = 460.683 GB; gc time = 0.338 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 16; avg bond dimension = 3.25; time = 1.634 sec; memory allocated = 460.681 GB; gc time = 0.276 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 17; avg bond dimension = 3.25; time = 1.62 sec; memory allocated = 460.667 GB; gc time = 0.315 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 18; avg bond dimension = 3.25; time = 1.586 sec; memory allocated = 460.69 GB; gc time = 0.199 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 19; avg bond dimension = 3.25; time = 1.695 sec; memory allocated = 460.678 GB; gc time = 0.341 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 20; avg bond dimension = 3.25; time = 1.709 sec; memory allocated = 460.678 GB; gc time = 0.213 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 21; avg bond dimension = 3.25; time = 1.795 sec; memory allocated = 460.644 GB; gc time = 0.364 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 22; avg bond dimension = 3.125; time = 1.695 sec; memory allocated = 460.609 GB; gc time = 0.209 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 23; avg bond dimension = 2.75; time = 1.823 sec; memory allocated = 460.557 GB; gc time = 0.356 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 24; avg bond dimension = 2.5; time = 1.712 sec; memory allocated = 460.523 GB; gc time = 0.226 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 25; avg bond dimension = 2.5; time = 1.777 sec; memory allocated = 460.523 GB; gc time = 0.28 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 26; avg bond dimension = 2.5; time = 1.529 sec; memory allocated = 460.484 GB; gc time = 0.259 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 27; avg bond dimension = 2.5; time = 1.664 sec; memory allocated = 460.523 GB; gc time = 0.204 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 28; avg bond dimension = 2.5; time = 1.713 sec; memory allocated = 460.523 GB; gc time = 0.332 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 29; avg bond dimension = 2.75; time = 1.652 sec; memory allocated = 460.576 GB; gc time = 0.215 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 30; avg bond dimension = 2.875; time = 1.791 sec; memory allocated = 460.647 GB; gc time = 0.34 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 31; avg bond dimension = 3.0; time = 1.684 sec; memory allocated = 460.668 GB; gc time = 0.209 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 32; avg bond dimension = 3.125; time = 1.792 sec; memory allocated = 460.674 GB; gc time = 0.362 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 33; avg bond dimension = 3.25; time = 1.512 sec; memory allocated = 460.678 GB; gc time = 0.18 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 34; avg bond dimension = 3.25; time = 1.71 sec; memory allocated = 460.678 GB; gc time = 0.285 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 35; avg bond dimension = 3.25; time = 1.628 sec; memory allocated = 460.677 GB; gc time = 0.263 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 36; avg bond dimension = 3.5; time = 1.619 sec; memory allocated = 460.7 GB; gc time = 0.194 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 37; avg bond dimension = 3.5; time = 1.579 sec; memory allocated = 460.77 GB; gc time = 0.338 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 38; avg bond dimension = 3.5; time = 1.654 sec; memory allocated = 460.726 GB; gc time = 0.224 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 39; avg bond dimension = 3.25; time = 1.801 sec; memory allocated = 460.684 GB; gc time = 0.356 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 40; avg bond dimension = 3.25; time = 1.678 sec; memory allocated = 460.677 GB; gc time = 0.227 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 41; avg bond dimension = 3.125; time = 1.738 sec; memory allocated = 460.673 GB; gc time = 0.281 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 42; avg bond dimension = 3.0; time = 1.673 sec; memory allocated = 460.668 GB; gc time = 0.29 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 43; avg bond dimension = 3.0; time = 1.701 sec; memory allocated = 460.668 GB; gc time = 0.286 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 44; avg bond dimension = 3.0; time = 1.674 sec; memory allocated = 460.668 GB; gc time = 0.268 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 45; avg bond dimension = 3.0; time = 1.744 sec; memory allocated = 460.662 GB; gc time = 0.343 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 46; avg bond dimension = 3.0; time = 1.466 sec; memory allocated = 460.655 GB; gc time = 0.185 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 47; avg bond dimension = 3.0; time = 1.668 sec; memory allocated = 460.655 GB; gc time = 0.279 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 48; avg bond dimension = 3.0; time = 1.594 sec; memory allocated = 460.655 GB; gc time = 0.293 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 49; avg bond dimension = 3.0; time = 1.597 sec; memory allocated = 460.655 GB; gc time = 0.27 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 50; avg bond dimension = 2.625; time = 1.581 sec; memory allocated = 460.548 GB; gc time = 0.279 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 51; avg bond dimension = 2.5; time = 1.701 sec; memory allocated = 460.523 GB; gc time = 0.272 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 52; avg bond dimension = 2.5; time = 1.471 sec; memory allocated = 460.523 GB; gc time = 0.268 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 53; avg bond dimension = 2.875; time = 1.737 sec; memory allocated = 460.616 GB; gc time = 0.351 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 54; avg bond dimension = 3.0; time = 1.502 sec; memory allocated = 460.655 GB; gc time = 0.194 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 55; avg bond dimension = 3.0; time = 1.67 sec; memory allocated = 460.655 GB; gc time = 0.37 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 56; avg bond dimension = 3.0; time = 1.668 sec; memory allocated = 460.655 GB; gc time = 0.179 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 57; avg bond dimension = 3.0; time = 1.588 sec; memory allocated = 460.655 GB; gc time = 0.273 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 58; avg bond dimension = 3.0; time = 1.702 sec; memory allocated = 460.655 GB; gc time = 0.264 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 59; avg bond dimension = 3.0; time = 1.444 sec; memory allocated = 460.655 GB; gc time = 0.205 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 60; avg bond dimension = 3.0; time = 1.715 sec; memory allocated = 460.655 GB; gc time = 0.334 sec
+[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mStep = 61; avg bond dimension = 3.0; time = 1.801 sec; memory allocated = 460.655 GB; gc time = 0.29 sec

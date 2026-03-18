@@ -1,20 +1,107 @@
 [[simulation]]
-name = "test"
+name = "test_better"
 calculation = "complex_corr"
-method = "TNPI"
+corr_type = "asymm"
+method = "adaptive-kinks-QuAPI"
 output = "test.hdf5"
 
-nsteps = 50
+nsteps = 12
+dt = 0.125
+tfinal = 15.0
+
+A = "sigmaz"
+B = "sigmaz"
+partition_function = "id"
+fourier_transform = true
+
+observable_output = "dt0.125_asymm_kinks_nsteps12.dat"
+
+[[simulation]]
+name = "test"
+calculation = "complex_corr"
+corr_type = "asymm"
+method = "adaptive-kinks-QuAPI"
+output = "test.hdf5"
+
+nsteps = 4
 dt = 0.25
 tfinal = 15.0
 
 A = "sigmaz"
 B = "sigmaz"
 partition_function = "id"
-correlation_function_output = "sigma_z.dat"
 fourier_transform = true
 
-maxdim = 1000
-cutoff = 1e-10
+observable_output = "dt0.25_asymm_kinks_nsteps4.dat"
 
-observable_output = "dt_0.25_corr.dat"
+[[simulation]]
+name = "test"
+calculation = "complex_corr"
+corr_type = "symm"
+method = "adaptive-kinks-QuAPI"
+output = "test.hdf5"
+
+nsteps = 4
+dt = 0.25
+tfinal = 15.0
+
+A = "sigmaz"
+B = "sigmaz"
+partition_function = "id"
+fourier_transform = true
+
+observable_output = "dt0.25_symm_kinks_nsteps4.dat"
+
+[[simulation]]
+name = "test"
+calculation = "complex_corr"
+corr_type = "asymm"
+method = "QuAPI"
+output = "test.hdf5"
+
+nsteps = 4
+dt = 0.25
+tfinal = 15.0
+
+A = "sigmaz"
+B = "sigmaz"
+partition_function = "id"
+fourier_transform = true
+
+observable_output = "dt0.25_asymm_quapi_nsteps4.dat"
+
+[[simulation]]
+name = "test"
+calculation = "complex_corr"
+corr_type = "symm"
+method = "QuAPI"
+output = "test.hdf5"
+
+nsteps = 4
+dt = 0.25
+tfinal = 15.0
+
+A = "sigmaz"
+B = "sigmaz"
+partition_function = "id"
+fourier_transform = true
+
+observable_output = "dt0.25_symm_quapi_nsteps4.dat"
+
+[[simulation]]
+name = "test"
+calculation = "complex_corr"
+corr_type = "symm"
+method = "TNPI"
+output = "test.hdf5"
+
+nsteps = 4
+dt = 0.25
+tfinal = 15.0
+
+A = "sigmaz"
+B = "sigmaz"
+partition_function = "id"
+fourier_transform = true
+
+observable_output = "dt0.25_symm_tnpi_nsteps4.dat"
