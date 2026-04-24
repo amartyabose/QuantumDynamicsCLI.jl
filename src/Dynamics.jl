@@ -451,7 +451,10 @@ function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sy
     end
     num_modes = sim_node["num_modes"]
     Lmax = sim_node["Lmax"]
-    num_modes_group = Utilities.create_and_select_group(dt_group, "num_modes=$(num_modes)")
+    decomp_type = get(sim_node, "decomposition", "pade")
+    decomp_group = Utilities.create_and_select_group(dt_group, "decomposition=$(decomp_type)")
+    num_modes_group = Utilities.create_and_select_group(decomp_group, "num_modes=$(num_modes)")
+    # num_modes_group = Utilities.create_and_select_group(dt_group, "num_modes=$(num_modes)")
     Lmax_group = Utilities.create_and_select_group(num_modes_group, "Lmax=$(Lmax)")
     threshold = get(sim_node, "threshold", 0.0)
     threshold_group = Utilities.create_and_select_group(Lmax_group, "threshold=$(threshold)")
@@ -480,9 +483,9 @@ function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sy
         end
 
         @time _, ρs = if isnothing(sys.external_fields)
-            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol))
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type, verbose=true)
         else
-            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, external_fields=sys.external_fields, extraargs=Utilities.DiffEqArgs(; reltol, abstol))
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, external_fields=sys.external_fields, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type, verbose=true)
         end
         Utilities.check_or_insert_value(data, "rho", ρs)
         flush(data)
