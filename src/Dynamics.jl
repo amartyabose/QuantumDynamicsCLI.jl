@@ -444,6 +444,63 @@ function dynamics(::QDSimUtilities.Method"QCPI", units::QDSimUtilities.Units,
     data
 end
 
+function dynamics(::QDSimUtilities.Method"QC-HEOM", units::QDSimUtilities.Units,
+                  sys::QDSimUtilities.System, bath::QDSimUtilities.Bath,
+                  sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group},
+                  sim_node; dry=false)
+    if !dry
+        @info "Running a QC-HEOM calculation. Please cite:"
+    end
+    Lmax = sim_node["Lmax"]
+    Lmax_group = Utilities.create_and_select_group(dt_group, "Lmax=$(Lmax)")
+    reltol = get(sim_node, "reltol", 1e-6)
+    abstol = get(sim_node, "abstol", 1e-6)
+    data = Utilities.create_and_select_group(Lmax_group, "reltol=$(reltol); abstol=$(abstol)")
+    outgroup = sim_node["outgroup"]
+
+    ρ0 = ParseInput.parse_operator(sim_node["rho0"], sys.Hamiltonian)
+
+    nbins = get(sim_node, "num_bins", 1)
+    nmc = sim_node["num_mc"]
+    data = Utilities.create_and_select_group(data, "total_mc=$(nmc * nbins)")
+
+    Utilities.check_or_insert_value(data, "num_bins", nbins)
+    for n in 1:nbins
+        Utilities.create_and_select_group(data, "bin #$n")
+    end
+
+    outgroup = sim_node["outgroup"]
+
+    if !dry
+        @info "Running with $(Threads.nthreads()) threads."
+
+        time = 0:sim.dt/units.time_unit:sim.nsteps*sim.dt/units.time_unit |> collect
+        Hamiltonian = sys.Hamiltonian .+ diagm(sum([SpectralDensities.reorganization_energy(j) * bath.svecs[nb, :] .^ 2 for (nb, j) in enumerate(bath.Jw)]))
+        sys_ops = [diagm(complex(bath.svecs[nb, :])) for nb = 1:size(bath.svecs, 1)]
+        ω, c = QDSimUtilities.discretize(bath)
+        svecs = [bath.svecs[nb, :] for nb = 1:length(bath.Jw)]
+        hb = Solvents.HarmonicBath(; β=bath.β, ω, c, svecs, nsamples=nmc)
+        for n in 1:nbins
+            bin = Utilities.create_and_select_group(data, "bin #$n")
+            Utilities.check_or_insert_value(bin, "num_mc", nmc)
+
+            outgrouphdf5 = Utilities.create_and_select_group(bin, outgroup)
+            Utilities.check_or_insert_value(bin, "dt", sim.dt / units.time_unit)
+            Utilities.check_or_insert_value(bin, "time_unit", units.time_unit)
+            Utilities.check_or_insert_value(bin, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time", time)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_unit", units.time_unit)
+            flush(bin)
+
+            @info "Calculating bin $n of $nbins"
+            _, ρs = QCHEOM.propagate(; Hamiltonian=sys.Hamiltonian, Jw=bath.Jw, solvent=hb, sops=sys_ops, ρ0, β=bath.β, ntimes=sim.nsteps, dt=sim.dt, Lmax, extraargs=Utilities.DiffEqArgs(; reltol, abstol), verbose=true)
+            Utilities.check_or_insert_value(outgrouphdf5, "rho", ρs)
+        end
+        flush(data)
+    end
+    data
+end
+
 function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sys::QDSimUtilities.System, bath::QDSimUtilities.Bath, sim::QDSimUtilities.Simulation, dt_group::Union{Nothing,HDF5.Group}, sim_node; dry=false)
     if !dry
         @info "Running a HEOM calculation."
@@ -454,7 +511,6 @@ function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sy
     decomp_type = get(sim_node, "decomposition", "pade")
     decomp_group = Utilities.create_and_select_group(dt_group, "decomposition=$(decomp_type)")
     num_modes_group = Utilities.create_and_select_group(decomp_group, "num_modes=$(num_modes)")
-    # num_modes_group = Utilities.create_and_select_group(dt_group, "num_modes=$(num_modes)")
     Lmax_group = Utilities.create_and_select_group(num_modes_group, "Lmax=$(Lmax)")
     threshold = get(sim_node, "threshold", 0.0)
     threshold_group = Utilities.create_and_select_group(Lmax_group, "threshold=$(threshold)")
@@ -483,9 +539,9 @@ function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sy
         end
 
         @time _, ρs = if isnothing(sys.external_fields)
-            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type, verbose=true)
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type)
         else
-            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, threshold, L, external_fields=sys.external_fields, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type, verbose=true)
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, L, external_fields=sys.external_fields, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type)
         end
         Utilities.check_or_insert_value(data, "rho", ρs)
         flush(data)
