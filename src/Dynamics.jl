@@ -493,8 +493,11 @@ function dynamics(::QDSimUtilities.Method"QC-HEOM", units::QDSimUtilities.Units,
             flush(bin)
 
             @info "Calculating bin $n of $nbins"
-            _, ρs = QCHEOM.propagate(; Hamiltonian=sys.Hamiltonian, Jw=bath.Jw, solvent=hb, sops=sys_ops, ρ0, β=bath.β, ntimes=sim.nsteps, dt=sim.dt, Lmax, extraargs=Utilities.DiffEqArgs(; reltol, abstol), verbose=true)
+            time_taken = @elapsed begin
+                _, ρs = QCHEOM.propagate(; Hamiltonian=sys.Hamiltonian, Jw=bath.Jw, solvent=hb, sops=sys_ops, ρ0, β=bath.β, ntimes=sim.nsteps, dt=sim.dt, Lmax, extraargs=Utilities.DiffEqArgs(; reltol, abstol), verbose=true)
+            end
             Utilities.check_or_insert_value(outgrouphdf5, "rho", ρs)
+            Utilities.check_or_insert_value(outgrouphdf5, "time_taken", time_taken)
         end
         flush(data)
     end
@@ -539,12 +542,12 @@ function dynamics(::QDSimUtilities.Method"HEOM", units::QDSimUtilities.Units, sy
         end
 
         @time _, ρs = if isnothing(sys.external_fields)
-            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type)
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, L, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type, output=data)
         else
-            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, L, external_fields=sys.external_fields, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type)
+            HEOM.propagate(; Hamiltonian, ρ0, sys_ops, Jw=bath.Jw, β=bath.β, num_modes, Lmax, dt=sim.dt, ntimes=sim.nsteps, L, external_fields=sys.external_fields, extraargs=Utilities.DiffEqArgs(; reltol, abstol), decomposition=decomp_type, output=data)
         end
-        Utilities.check_or_insert_value(data, "rho", ρs)
-        flush(data)
+        # Utilities.check_or_insert_value(data, "rho", ρs)
+        # flush(data)
     end
     data
 end
